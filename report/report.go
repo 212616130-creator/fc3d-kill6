@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"fc3d-kill6/backtest"
+	"fc3d-kill6/engine/pattern"
 	"fc3d-kill6/engine/ssq"
 )
 
@@ -41,6 +42,19 @@ type SSQView struct {
 	KeepReds []int         // 本期红球保留池（33 减去杀 6）
 }
 
+// PatView 规律挖掘区块视图数据（跨期组合参考）
+type PatView struct {
+	Window int               // 回测窗口（近 N 期）
+	Danma  *pattern.Analysis // 胆码
+	Dudan  *pattern.Analysis // 毒胆
+	SumBH  *pattern.Analysis // 杀百个和尾
+	SumBT  *pattern.Analysis // 杀百十和尾
+	SumTO  *pattern.Analysis // 杀十个和尾
+
+	DanmaSt, DudanSt          *pattern.KindStats
+	SumBHSt, SumBTSt, SumTOSt *pattern.KindStats
+}
+
 // view 模板视图（Rows 已按最新在前排序）
 type view struct {
 	Meta      backtest.Meta
@@ -55,6 +69,7 @@ type view struct {
 	TrendSVG  string
 	SSQRing   string
 	SSQ       *SSQView
+	Pat       *PatView
 }
 
 // ringSVG 生成 6 杀全中率环形进度（path 圆弧，规避 transform 解析问题）
@@ -297,6 +312,33 @@ footer{display:flex;flex-direction:column;align-items:center;gap:14px;padding:56
 .foot-text{font-size:12px;color:var(--text3)}
 .foot-meta{font-size:11px;color:#475569}
 .foot-brand{font-size:10px;color:#334155}
+.pat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pat-card{display:flex;flex-direction:column;gap:14px;padding:22px 24px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border-soft)}
+.pat-card.danma{border-color:rgba(34,211,238,.35)}
+.pat-card.dudan{border-color:rgba(248,113,113,.35)}
+.pat-card.sumtail{border-color:rgba(251,191,36,.35)}
+.pat-head{display:flex;align-items:center;justify-content:space-between}
+.pat-title{font-size:15px;font-weight:700}
+.pat-tag{font-size:10px;color:var(--text3);padding:3px 8px;border-radius:999px;background:var(--surface2);border:1px solid var(--border-soft)}
+.pat-nums{display:flex;gap:10px}
+.pat-num{width:52px;height:52px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;font:800 24px var(--font-num);background:var(--surface2);border:1px solid var(--border-soft)}
+.pat-card.danma .pat-num{color:var(--cyan-soft);border-color:rgba(34,211,238,.4)}
+.pat-card.dudan .pat-num{color:var(--red);border-color:rgba(248,113,113,.4)}
+.pat-card.sumtail .pat-num{color:var(--amber-soft);border-color:rgba(251,191,36,.4)}
+.pat-empty{font-size:12px;color:var(--text3)}
+.pat-meta{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text2);line-height:1.6}
+.pat-meta b{color:var(--green-soft)}
+.pat-meta .base{color:var(--text3)}
+.pat-detail{font-size:11px;color:var(--text3);line-height:1.8;max-height:150px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(148,163,184,.35) transparent}
+.pat-detail summary{cursor:pointer;color:var(--text2);margin-bottom:4px}
+.pat-detail .d-row{display:flex;justify-content:space-between;gap:10px;padding:4px 2px;border-top:1px dashed var(--border-soft)}
+.pat-detail .d-path{font:400 12px var(--font-num);color:var(--cyan-soft)}
+.pat-detail .d-num{font:600 12px var(--font-num);color:var(--violet-soft);white-space:nowrap}
+.sum-grid{display:flex;flex-direction:column;gap:10px}
+.sum-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border-soft)}
+.sum-label{font-size:12px;color:var(--text2)}
+.sum-val{font:700 20px var(--font-num);color:var(--amber-soft)}
+.sum-meta{font-size:10px;color:var(--text3);text-align:right;line-height:1.5}
 @media (max-width:1023px){
 .page{padding:0 20px}
 header{height:60px}
@@ -348,6 +390,9 @@ h1{font-size:26px}
 .tab-btn .tab-ico{width:20px;height:20px}
 .ssq-grid{grid-template-columns:1fr}
 .bt-grid{grid-template-columns:1fr}
+.pat-grid{grid-template-columns:1fr}
+.pat-card{padding:18px 16px}
+.pat-num{width:44px;height:44px;font-size:20px}
 .ssq-hero-card{flex-direction:column;align-items:flex-start;gap:14px;padding:16px 18px}
 .shc-value{font-size:36px}
 .keep-grid{grid-template-columns:repeat(6,1fr)}
@@ -525,6 +570,39 @@ footer{padding:22px 0 10px;gap:8px}
       </div>
       <div class="trend-card">
         <svg viewBox="0 0 600 200" role="img" aria-label="6杀全中率趋势折线图">{{.TrendSVG}}</svg>
+      </div>
+    </section>
+    {{end}}
+
+    {{if .Pat}}
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">规律挖掘 · 跨期组合参考</h2>
+        <span class="section-meta">胆码 / 毒胆 / 和尾杀号 · 算法移植自 lottery-analyzer · 近{{.Pat.Window}}期滚动回测</span>
+        <p class="section-note">人话：把历史按期号切成块，挖「连续多块都成立的跨期数字组合」，套到最新几期给出参考。与杀码引擎相互独立，如实对照随机基线，不构成投注建议。</p>
+      </div>
+      <div class="pat-grid">
+        <div class="pat-card danma">
+          <div class="pat-head"><span class="pat-title">胆码参考</span><span class="pat-tag">至少一位开出</span></div>
+          <div class="pat-nums">{{range .Pat.Danma.Picks}}<span class="pat-num">{{.}}</span>{{end}}{{if not .Pat.Danma.Picks}}<span class="pat-empty">暂无稳定规律</span>{{end}}</div>
+          <div class="pat-meta"><span>近{{.Pat.Window}}期命中 <b>{{printf "%.1f" .Pat.DanmaSt.Rate}}%</b>（随机基线 {{printf "%.1f" .Pat.DanmaSt.Base}}%）</span><span>全量 {{.Pat.DanmaSt.FullN}} 期 {{printf "%.1f" .Pat.DanmaSt.FullRate}}%</span></div>
+          <details class="pat-detail"><summary>规律明细 · {{.Pat.Danma.HitCount}} 条</summary>{{range .Pat.Danma.Hits}}<div class="d-row"><span class="d-path">{{.Path}}</span><span class="d-num">连中{{.MaxCons}}块 · {{joinNums .Next}}</span></div>{{end}}</details>
+        </div>
+        <div class="pat-card dudan">
+          <div class="pat-head"><span class="pat-title">毒胆参考</span><span class="pat-tag">全部不开</span></div>
+          <div class="pat-nums">{{range .Pat.Dudan.Picks}}<span class="pat-num">{{.}}</span>{{end}}{{if not .Pat.Dudan.Picks}}<span class="pat-empty">暂无稳定规律</span>{{end}}</div>
+          <div class="pat-meta"><span>近{{.Pat.Window}}期命中 <b>{{printf "%.1f" .Pat.DudanSt.Rate}}%</b>（随机基线 {{printf "%.1f" .Pat.DudanSt.Base}}%）</span><span>全量 {{.Pat.DudanSt.FullN}} 期 {{printf "%.1f" .Pat.DudanSt.FullRate}}%</span></div>
+          <details class="pat-detail"><summary>规律明细 · {{.Pat.Dudan.HitCount}} 条</summary>{{range .Pat.Dudan.Hits}}<div class="d-row"><span class="d-path">{{.Path}}</span><span class="d-num">连中{{.MaxCons}}块 · {{joinNums .Next}}</span></div>{{end}}</details>
+        </div>
+        <div class="pat-card sumtail">
+          <div class="pat-head"><span class="pat-title">和尾杀号</span><span class="pat-tag">组合和尾 ≠ 位和尾</span></div>
+          <div class="sum-grid">
+            <div class="sum-row"><span class="sum-label">百个和尾 · 杀</span><span class="sum-val">{{if .Pat.SumBH.Picks}}{{index .Pat.SumBH.Picks 0}}{{else}}—{{end}}</span><span class="sum-meta">近{{.Pat.Window}}期 {{printf "%.1f" .Pat.SumBHSt.Rate}}%<br>基线 {{printf "%.1f" .Pat.SumBHSt.Base}}%</span></div>
+            <div class="sum-row"><span class="sum-label">百十和尾 · 杀</span><span class="sum-val">{{if .Pat.SumBT.Picks}}{{index .Pat.SumBT.Picks 0}}{{else}}—{{end}}</span><span class="sum-meta">近{{.Pat.Window}}期 {{printf "%.1f" .Pat.SumBTSt.Rate}}%<br>基线 {{printf "%.1f" .Pat.SumBTSt.Base}}%</span></div>
+            <div class="sum-row"><span class="sum-label">十个和尾 · 杀</span><span class="sum-val">{{if .Pat.SumTO.Picks}}{{index .Pat.SumTO.Picks 0}}{{else}}—{{end}}</span><span class="sum-meta">近{{.Pat.Window}}期 {{printf "%.1f" .Pat.SumTOSt.Rate}}%<br>基线 {{printf "%.1f" .Pat.SumTOSt.Base}}%</span></div>
+          </div>
+          <div class="pat-meta"><span>和尾 = 开奖号三位相加的个位。杀和尾 = 排除「下期和尾 = 该数字」的组合规律，基线为 90%。</span></div>
+        </div>
       </div>
     </section>
     {{end}}
@@ -740,7 +818,7 @@ footer{padding:22px 0 10px;gap:8px}
 </html>`
 
 // GenerateHTML 渲染完整页面（Rows 自动转为最新在前）
-func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, wf []backtest.WFWindow, sv *SSQView) (string, error) {
+func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, wf []backtest.WFWindow, sv *SSQView, pr *pattern.BacktestResult) (string, error) {
 	funcs := template.FuncMap{
 		"pctW": func(v, max int) int {
 			if max <= 0 {
@@ -757,6 +835,13 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 				return "<0.001"
 			}
 			return fmt.Sprintf("%.3f", p)
+		},
+		"joinNums": func(a []int) string {
+			parts := make([]string, len(a))
+			for i, n := range a {
+				parts[i] = fmt.Sprintf("%d", n)
+			}
+			return strings.Join(parts, ",")
 		},
 		"ssqSumSVG": ssqSumSVG,
 		"ssqReds": func(rs [6]int) string {
@@ -790,6 +875,7 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		TrendSVG: trendSVG(rev),
 		SSQRing:  "",
 		SSQ:      sv,
+		Pat:      buildPatView(pr),
 	}
 	if sv != nil {
 		data.SSQRing = ringSVG(sv.Meta.BluePct)
@@ -799,6 +885,25 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+// buildPatView 组装规律挖掘区块视图数据
+func buildPatView(pr *pattern.BacktestResult) *PatView {
+	if pr == nil {
+		return nil
+	}
+	pv := &PatView{Window: pr.Window}
+	pv.Danma = pr.Latest[pattern.Danma]
+	pv.Dudan = pr.Latest[pattern.Dudan]
+	pv.SumBH = pr.Latest[pattern.SumBH]
+	pv.SumBT = pr.Latest[pattern.SumBT]
+	pv.SumTO = pr.Latest[pattern.SumTO]
+	pv.DanmaSt = pr.Stat(pattern.Danma)
+	pv.DudanSt = pr.Stat(pattern.Dudan)
+	pv.SumBHSt = pr.Stat(pattern.SumBH)
+	pv.SumBTSt = pr.Stat(pattern.SumBT)
+	pv.SumTOSt = pr.Stat(pattern.SumTO)
+	return pv
 }
 
 // ssqSumSVG 红球和值走势折线（SVG 片段，含均值虚线）

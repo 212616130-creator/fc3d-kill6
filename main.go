@@ -11,9 +11,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"fc3d-kill6/backtest"
 	"fc3d-kill6/data"
+	"fc3d-kill6/engine/pattern"
 	"fc3d-kill6/engine/ssq"
 	"fc3d-kill6/fetch"
 	"fc3d-kill6/monitor"
@@ -88,6 +90,18 @@ func main() {
 			w.Label, w.All6, w.N, w.All6Pct, w.BeatPP, w.Z, pv)
 	}
 
+	// Step 3.7: 规律挖掘（胆码/毒胆/和尾，跨期组合，算法移植自 lottery-analyzer）
+	fmt.Println("\n🔎 规律挖掘 (跨期组合参考)...")
+	pat := pattern.Backtest(drawsToPattern(draws), pattern.Default, 100)
+	for _, s := range pat.Stats {
+		picks := joinInts(pat.Latest[s.Kind].Picks)
+		if picks == "" {
+			picks = "暂无"
+		}
+		fmt.Printf("   %s: 近%d期命中%.1f%% (基线%.1f%%) | 全量%.1f%% | 本期%s\n",
+			s.Kind.Short(), s.N, s.Rate, s.Base, s.FullRate, picks)
+	}
+
 	// Step 4: 趋势记录与表现预警
 	hist, _ := monitor.Record(*kill6Path, m.Period6Pct100, m.LatestIssue, m.LatestDate)
 	triggered, reasons, monthDrop := monitor.CheckAlert(m.Period6Pct100, hist)
@@ -136,7 +150,7 @@ func main() {
 	// Step 5: 生成 HTML
 	nextIssue := fetch.NextIssueCalc(m.LatestIssue, m.LatestDate, nextIssueHint(newData))
 	banners := report.Banners{DataUpgrade: triggered, UpgradeReasons: reasons, DataFailed: !dataAlive}
-	html, err := report.GenerateHTML(m, bt.Pred, bt.Rows, banners, nextIssue, wf, ssqView)
+	html, err := report.GenerateHTML(m, bt.Pred, bt.Rows, banners, nextIssue, wf, ssqView, pat)
 	if err != nil {
 		fmt.Printf("❌ HTML 生成失败: %v\n", err)
 		os.Exit(1)
@@ -229,4 +243,21 @@ func repeat(s string, n int) string {
 		out += s
 	}
 	return out
+}
+
+// drawsToPattern 转换 data.Draw → pattern.Draw
+func drawsToPattern(ds []data.Draw) []pattern.Draw {
+	out := make([]pattern.Draw, len(ds))
+	for i, d := range ds {
+		out[i] = pattern.Draw{Issue: d.Issue, B: d.B, S: d.S, G: d.G}
+	}
+	return out
+}
+
+func joinInts(a []int) string {
+	parts := make([]string, len(a))
+	for i, v := range a {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return strings.Join(parts, ",")
 }
