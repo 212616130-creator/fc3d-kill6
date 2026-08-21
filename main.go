@@ -128,9 +128,7 @@ func main() {
 	ssqStrategy := ssq.StrategyHot // 全量回测中相对最稳（见 ssq_probe）
 	ssqWin := 50
 	ssqRes := backtest.SSQBacktest(ssqDraws, 6, 3, ssqWin, ssqStrategy)
-	if ssqData != nil {
-		ssqRes.Meta.NextIssue = ssqData.NextIssue
-	}
+	ssqRes.Meta.NextIssue = ssqNextIssue(ssqData, ssqRes.Meta.LatestIssue, ssqRes.Meta.LatestDate)
 	ssqView := buildSSQView(ssqRes, ssqDraws)
 	fmt.Printf("  📊 杀%d红+杀%d蓝: 全中%.1f%% (基线%.1f%%) · 最新期 %s\n",
 		ssqRes.Meta.RedN, ssqRes.Meta.BlueN, ssqRes.Meta.AllPct, ssqRes.Meta.BaseAll, ssqRes.Meta.LatestIssue)
@@ -200,6 +198,14 @@ func nextIssueHint(lt *fetch.Latest) string {
 		return lt.NextIssue
 	}
 	return ""
+}
+
+// ssqNextIssue 双色球下一期期号：数据源 next_code 优先，兜底按最新期号自增（跨年安全）
+func ssqNextIssue(lt *fetch.LatestSSQ, issue, date string) string {
+	if lt != nil && lt.NextIssue != "" {
+		return lt.NextIssue
+	}
+	return fetch.NextIssueCalc(issue, date, "")
 }
 
 func repeat(s string, n int) string {
