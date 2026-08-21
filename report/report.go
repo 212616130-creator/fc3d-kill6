@@ -9,7 +9,6 @@ import (
 	"text/template"
 
 	"fc3d-kill6/backtest"
-	"fc3d-kill6/monitor"
 )
 
 // Data 模板数据
@@ -465,7 +464,7 @@ footer{padding:22px 0 10px;gap:8px}
 </html>`
 
 // GenerateHTML 渲染完整页面（Rows 自动转为最新在前）
-func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, hist []monitor.Entry, wf []backtest.WFWindow) (string, error) {
+func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, wf []backtest.WFWindow) (string, error) {
 	t, err := template.New("page").Parse(tmplSrc)
 	if err != nil {
 		return "", err
@@ -479,7 +478,7 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		Ring:     ringSVG(m.Period6Pct100),
 		Pct6Beat: m.Period6Pct100 - 51.2,
 		WFNote:   wfNote(wf),
-		TrendSVG: trendSVG(hist),
+		TrendSVG: trendSVG(rev),
 	}
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
@@ -503,14 +502,14 @@ func wfNote(wf []backtest.WFWindow) string {
 }
 
 // trendSVG 生成 6 杀全中率趋势折线（SVG 片段，含 70% 预警线与 51.2% 基线）
-func trendSVG(entries []monitor.Entry) string {
-	n := len(entries)
+//
+// 输入为回测逐期明细：x 轴从最新（左）到最早（右），y 轴为"若从该期起
+// 回测到现在的累计 6 杀全中率"。这样可以立刻基于已有 100 期数据画出
+// 算法表现轨迹，不必等 monitor 历史积累。
+func trendSVG(rows []backtest.Row) string {
+	n := len(rows)
 	if n == 0 {
 		return ""
-	}
-	if n > 90 {
-		entries = entries[n-90:]
-		n = 90
 	}
 	const W, H = 600.0, 200.0
 	const padL, padR, padT, padB = 10.0, 40.0, 18.0, 24.0
@@ -519,18 +518,35 @@ func trendSVG(entries []monitor.Entry) string {
 	yMin, yMax := 40.0, 95.0
 	x := func(i int) float64 { return padL + float64(i)*(plotW/float64(n-1)) }
 	y := func(pct float64) float64 { return padT + (yMax-pct)/(yMax-yMin)*plotH }
-	pts := make([]string, 0, n)
-	for i, e := range entries {
-		pts = append(pts, fmt.Sprintf("%.1f,%.1f", x(i), y(e.Pct)))
+
+	// rows 是最新在前：rows[0]=最新, rows[n-1]=最早
+	// 从最早往最新累加，得到每个 i 对应"从 i 往窗口末尾"的累计命中率。
+	cum := make([]float64, n)
+	running := 0
+	for i := n - 1; i >= 0; i-- {
+		if rows[i].All6OK {
+			running++
+		}
+		cum[i] = float64(running) / float64(n-i) * 100
 	}
+
+	pts := make([]string, 0, n)
+	for i := 0; i < n; i++ {
+		pts = append(pts, fmt.Sprintf("%.1f,%.1f", x(i), y(cum[i])))
+	}
+
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#F87171" stroke-width="1" stroke-dasharray="4 3" opacity="0.55"/>`, padL, y(70), W-padR, y(70)))
 	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#F87171" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">70%%</text>`, W-padR+4, y(70)+3))
 	sb.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#64748B" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>`, padL, y(51.2), W-padR, y(51.2)))
 	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#64748B" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">51.2%%</text>`, W-padR+4, y(51.2)+3))
 	sb.WriteString(`<polyline points="` + strings.Join(pts, " ") + `" fill="none" stroke="#34D399" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`)
-	lx, ly := x(n-1), y(entries[n-1].Pct)
+	// 左端（最新一期）+ 数值标签 + 右端也加圆
+	lx, ly := x(0), y(cum[0])
+	rx, ry := x(n-1), y(cum[n-1])
 	sb.WriteString(fmt.Sprintf(`<circle cx="%.1f" cy="%.1f" r="3.5" fill="#34D399"/>`, lx, ly))
-	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#34D399" font-size="13" font-weight="600" font-family="'SF Mono',ui-monospace,Menlo,monospace">%.1f%%</text>`, lx-8, ly-10, entries[n-1].Pct))
+	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#34D399" font-size="13" font-weight="600" font-family="'SF Mono',ui-monospace,Menlo,monospace">%.1f%%</text>`, lx+6, ly-8, cum[0]))
+	sb.WriteString(fmt.Sprintf(`<circle cx="%.1f" cy="%.1f" r="2.5" fill="#64748B"/>`, rx, ry))
+	_ = ry
 	return sb.String()
 }
