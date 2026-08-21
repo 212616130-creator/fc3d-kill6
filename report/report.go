@@ -430,7 +430,6 @@ footer{padding:22px 0 10px;gap:8px}
     s.onload = function () {
       if (window.WxAuth) {
         WxAuth.init({
-          siteId: 'blog.shenzjd.com',
           required: false,
           onVerified: function (u) { console.log('[wx-auth] 认证成功', u); }
         });
