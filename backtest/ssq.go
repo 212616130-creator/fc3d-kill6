@@ -24,23 +24,26 @@ type SSQRow struct {
 
 // SSQMeta 双色球回测元数据（含本期杀号与全量回测杀中率）
 type SSQMeta struct {
-	Total       int
-	LatestIssue string
-	LatestDate  string
-	NextIssue   string
-	Strategy    string
-	Window      int
-	KillReds    []int // 本期杀红
-	KillBlues   []int // 本期杀蓝
-	RedN, BlueN int
-	RedPct      float64  // 全量回测：杀红全避开率
-	BluePct     float64  // 全量回测：杀蓝避开率
-	AllPct      float64  // 全量回测：红蓝全避开率
-	BaseRed     float64  // 随机基线：杀 RedN 红全避开
-	BaseBlue    float64  // 随机基线：杀 BlueN 蓝避开
-	BaseAll     float64  // 随机基线：红蓝全避开
-	Rows        []SSQRow // 尾部 100 期明细（最新在前）
-	WF          []WFWindow
+	Total         int
+	LatestIssue   string
+	LatestDate    string
+	NextIssue     string
+	Strategy      string
+	Window        int
+	KillReds      []int // 本期杀红
+	KillBlues     []int // 本期杀蓝
+	RedN, BlueN   int
+	RedPct        float64  // 全量回测：杀红全避开率
+	BluePct       float64  // 全量回测：杀蓝避开率
+	AllPct        float64  // 全量回测：红蓝全避开率
+	BaseRed       float64  // 随机基线：杀 RedN 红全避开
+	BaseBlue      float64  // 随机基线：杀 BlueN 蓝避开
+	BaseAll       float64  // 随机基线：红蓝全避开
+	RecentRedPct  float64  // 最近 100 期：杀红全避开率
+	RecentBluePct float64  // 最近 100 期：杀蓝避开率
+	RecentAllPct  float64  // 最近 100 期：红蓝全避开率
+	Rows          []SSQRow // 尾部 100 期明细（最新在前）
+	WF            []WFWindow
 }
 
 // SSQResult 双色球回测输出
@@ -55,6 +58,7 @@ type SSQResult struct {
 func SSQBacktest(draws []data.SSQDraw, redN, blueN, window int, s ssq.Strategy) SSQResult {
 	total := len(draws)
 	rhit, bhit, allhit, n := 0, 0, 0, 0
+	rhit2, bhit2, allhit2, n2 := 0, 0, 0, 0 // 最近 100 期
 	all := make([]SSQRow, 0, total-window)
 	for t := window; t < total; t++ {
 		win := draws[t-window : t]
@@ -77,6 +81,18 @@ func SSQBacktest(draws []data.SSQDraw, redN, blueN, window int, s ssq.Strategy) 
 		}
 		if redOK && blueOK {
 			allhit++
+		}
+		if t >= total-100 { // 最近 100 期统计
+			n2++
+			if redOK {
+				rhit2++
+			}
+			if blueOK {
+				bhit2++
+			}
+			if redOK && blueOK {
+				allhit2++
+			}
 		}
 		all = append(all, SSQRow{
 			Issue: d.Issue, Date: d.Date,
@@ -108,6 +124,7 @@ func SSQBacktest(draws []data.SSQDraw, redN, blueN, window int, s ssq.Strategy) 
 		KillReds: kr, KillBlues: kb, RedN: redN, BlueN: blueN,
 		RedPct: pct(rhit, n), BluePct: pct(bhit, n), AllPct: pct(allhit, n),
 		BaseRed: ssqRedBase(redN), BaseBlue: ssqBlueBase(blueN),
+		RecentRedPct: pct(rhit2, n2), RecentBluePct: pct(bhit2, n2), RecentAllPct: pct(allhit2, n2),
 		Rows: rev,
 		WF:   ssqWalkForward(draws, redN, blueN, window, s, []int{100, 200, 500}),
 	}

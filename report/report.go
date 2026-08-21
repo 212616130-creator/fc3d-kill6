@@ -578,7 +578,7 @@ footer{padding:22px 0 10px;gap:8px}
           <div class="sk-group"><span class="sk-label rd">杀红球 · 6 个</span><span class="sk-nums">{{range .SSQ.Meta.KillReds}}<b class="nb rd">{{printf "%02d" .}}</b>{{end}}</span></div>
           <div class="sk-group"><span class="sk-label bd">杀蓝球 · 3 个</span><span class="sk-nums">{{range .SSQ.Meta.KillBlues}}<b class="nb bd">{{printf "%02d" .}}</b>{{end}}</span></div>
         </div>
-        <div class="sk-note">全量 {{.SSQ.Meta.Total}} 期回测：杀红全避开 <b>{{printf "%.1f" .SSQ.Meta.RedPct}}%</b>（随机基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%）· 杀蓝避开 <b>{{printf "%.1f" .SSQ.Meta.BluePct}}%</b>（基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%）——与基线相当。双色球是组合概率空间，统计无法预测，这是数学事实，不是算法问题。</div>
+        <div class="sk-note">全量 {{.SSQ.Meta.Total}} 期回测：杀蓝避开 <b>{{printf "%.1f" .SSQ.Meta.BluePct}}%</b>（随机基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%——蓝球仅 16 个，杀 3 个天然避开率高）· 杀红全避开 <b>{{printf "%.1f" .SSQ.Meta.RedPct}}%</b>（基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%，与随机相当）。红球组合空间大，统计无法稳定预测，如实呈现。</div>
       </div>
     </section>
 
@@ -617,10 +617,11 @@ footer{padding:22px 0 10px;gap:8px}
         <p class="section-note">人话：把杀号策略拿到过去每一期"提前算好、再对答案"，看命中率和闭眼乱排差多少——结论是基本一样。</p>
       </div>
       <div class="bt-grid">
+        <div class="cmp-cell"><span class="cmp-value v-green">{{printf "%.1f" .SSQ.Meta.BluePct}}%</span><span class="cmp-label">杀蓝避开（基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%）</span></div>
         <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.RedPct}}%</span><span class="cmp-label">杀红全避开（基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%）</span></div>
-        <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.BluePct}}%</span><span class="cmp-label">杀蓝避开（基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%）</span></div>
         <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.AllPct}}%</span><span class="cmp-label">红蓝全避开（基线 {{printf "%.1f" .SSQ.Meta.BaseAll}}%）</span></div>
       </div>
+      <div class="wf-note">最近 100 期：杀蓝避开 <b>{{printf "%.1f" .SSQ.Meta.RecentBluePct}}%</b> · 杀红 <b>{{printf "%.1f" .SSQ.Meta.RecentRedPct}}%</b> · 全中 <b>{{printf "%.1f" .SSQ.Meta.RecentAllPct}}%</b>（对应基线 {{printf "%.1f" .SSQ.Meta.BaseAll}}%）</div>
       <div class="wf-note">Walk-forward 滚动验证{{range .SSQ.Meta.WF}} · 近{{.Label}}全中 {{printf "%.1f" .All6Pct}}%（p={{pf .PVal}}）{{end}}——与随机基线无显著差异（p 值均不显著），如实呈现。</div>
     </section>
 
