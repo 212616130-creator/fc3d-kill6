@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"fc3d-kill6/backtest"
+	"fc3d-kill6/engine/ssq"
 )
 
 // Data 模板数据
@@ -26,6 +27,19 @@ type Banners struct {
 	DataFailed     bool // 数据源全挂（橙条）
 }
 
+// SSQView 双色球页签数据（统计工具版）
+type SSQView struct {
+	Meta     backtest.SSQMeta
+	HotReds  []ssq.NumFreq // 近 20 期热号
+	ColdReds []ssq.NumFreq // 近 20 期冷号
+	MissReds []ssq.NumMiss // 遗漏榜
+	BlueFreq []ssq.NumFreq // 蓝球频率
+	SumTrend []int         // 近 20 期红球和值
+	SumAvg   int           // 和值均值
+	MaxFreq  int           // 红球最大频率（榜条宽度基准）
+	MissMax  int           // 遗漏榜最大遗漏（榜条宽度基准）
+}
+
 // view 模板视图（Rows 已按最新在前排序）
 type view struct {
 	Meta      backtest.Meta
@@ -38,6 +52,7 @@ type view struct {
 	Pct6Beat  float64
 	WFNote    string
 	TrendSVG  string
+	SSQ       *SSQView
 }
 
 // ringSVG 生成 6 杀全中率环形进度（path 圆弧，规避 transform 解析问题）
@@ -125,6 +140,52 @@ h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .terms dl{margin:0;padding:6px 16px 14px}
 .terms dt{font-size:12px;font-weight:700;color:var(--text1);margin-top:10px}
 .terms dd{font-size:12px;line-height:1.7;color:var(--text2);margin:2px 0 0}
+.tabs{position:relative}
+.tabs>input{position:absolute;opacity:0;pointer-events:none}
+.tab-bar{display:flex;gap:8px;margin:20px 0 28px;border-bottom:1px solid var(--border);padding-bottom:14px}
+.tab-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:999px;border:1px solid var(--border-soft);background:var(--surface);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;user-select:none;transition:color .2s,border-color .2s,background .2s}
+.tab-btn .tab-ico{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;font:700 10px var(--font-num);background:var(--surface2);border:1px solid var(--border-soft);color:var(--text3)}
+.tab-btn:hover{color:var(--text1);border-color:rgba(34,211,238,.4)}
+#tab-3d:checked~.tab-bar .tab-btn[for="tab-3d"]{color:var(--cyan-soft);border-color:rgba(34,211,238,.5);background:rgba(23,71,97,.5)}
+#tab-3d:checked~.tab-bar .tab-btn[for="tab-3d"] .tab-ico{color:var(--cyan-soft);border-color:rgba(34,211,238,.5)}
+#tab-ssq:checked~.tab-bar .tab-btn[for="tab-ssq"]{color:var(--violet-soft);border-color:rgba(167,139,250,.5);background:rgba(66,43,112,.5)}
+#tab-ssq:checked~.tab-bar .tab-btn[for="tab-ssq"] .tab-ico{color:var(--violet-soft);border-color:rgba(167,139,250,.5)}
+.tab-pane{display:none}
+#tab-3d:checked~#pane-3d{display:block}
+#tab-ssq:checked~#pane-ssq{display:block}
+.ssq-kill{margin-top:20px;padding:18px 20px;border-radius:16px;background:linear-gradient(180deg,rgba(18,26,43,.9),rgba(13,20,41,1));border:1px solid rgba(167,139,250,.35)}
+.sk-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sk-title{font-size:14px;font-weight:700}
+.sk-strategy{font-size:11px;color:var(--text3)}
+.sk-body{display:flex;flex-direction:column;gap:10px}
+.sk-group{display:flex;align-items:center;gap:12px}
+.sk-label{flex:none;font-size:12px;color:var(--text2);display:inline-flex;align-items:center;gap:6px}
+.sk-label::before{content:"";width:8px;height:8px;border-radius:50%;flex:none}
+.sk-label.rd::before{background:#F87171}
+.sk-label.bd::before{background:#60A5FA}
+.sk-nums{display:flex;gap:8px;flex-wrap:wrap}
+.nb{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:9px;font:700 15px var(--font-num)}
+.nb.rd{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.5);color:var(--red)}
+.nb.bd{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.5);color:#93C5FD}
+.sk-note{margin-top:14px;padding:10px 12px;border-radius:10px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.35);font-size:11px;line-height:1.7;color:#FDBA74}
+.sk-note b{color:#FED7AA}
+.ssq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ssq-card{padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--border-soft)}
+.ssq-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ssq-hd>span:first-child{font-size:13px;font-weight:600}
+.rank-row{display:flex;align-items:center;gap:8px;padding:4px 0}
+.rank-num{flex:none;width:26px;font:600 12px var(--font-num);color:var(--text2);text-align:right}
+.rank-bar{flex:1;height:14px;border-radius:4px;background:rgba(148,163,184,.12);overflow:hidden}
+.rank-fill{height:100%;border-radius:4px}
+.rank-fill.hot{background:linear-gradient(90deg,#1D9E75,#34D399)}
+.rank-fill.cold{background:linear-gradient(90deg,#185FA5,#60A5FA)}
+.rank-fill.miss{background:linear-gradient(90deg,#854F0B,#FBBF24)}
+.rank-freq{flex:none;width:44px;font-size:11px;color:var(--text3);text-align:right}
+.blue-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bf{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:8px;background:var(--surface2);border:1px solid var(--border-soft)}
+.bf b{font:600 13px var(--font-num);color:#93C5FD}
+.bf i{font-size:10px;font-style:normal;color:var(--text3)}
+.bt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .issue-badge{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 24px;border-radius:14px;background:var(--surface);border:1px solid rgba(34,211,238,.35);box-shadow:0 0 24px rgba(13,166,237,.15)}
 .issue-label{font-size:12px;color:var(--text2)}
 .issue-value{font:800 30px var(--font-num);color:var(--cyan-soft)}
@@ -261,6 +322,17 @@ h1{font-size:26px}
 .plain-tip{font-size:11px;padding:10px 12px}
 .terms summary{font-size:11px}
 .terms dt,.terms dd{font-size:11px}
+.tab-bar{margin:14px 0 20px;padding-bottom:10px;gap:6px}
+.tab-btn{padding:8px 12px;font-size:12px;gap:6px}
+.tab-btn .tab-ico{width:20px;height:20px}
+.ssq-grid{grid-template-columns:1fr}
+.bt-grid{grid-template-columns:1fr}
+.blue-grid{grid-template-columns:repeat(8,1fr)}
+.bf{padding:6px 0}
+.ssq-kill{padding:14px 14px}
+.sk-head{flex-direction:column;align-items:flex-start;gap:4px}
+.sk-group{align-items:flex-start;flex-direction:column;gap:8px}
+.nb{min-width:30px;height:30px;font-size:13px}
 .table-wrap{display:none}
 .m-detail{display:flex;max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 8px 2px 2px;border-radius:14px;border:1px solid var(--border);background:rgba(18,26,43,.4);scrollbar-width:thin;scrollbar-color:rgba(148,163,184,.35) transparent}
 .m-detail::-webkit-scrollbar{width:6px}
@@ -288,12 +360,20 @@ footer{padding:22px 0 10px;gap:8px}
       </div>
     </div>
     <div class="hdr-right">
-      <span class="hdr-meta">数据截止 {{.Meta.LatestDate}} · 共{{.Meta.Total}}期</span>
+      <span class="hdr-meta">福彩3D + 双色球 · 每日自动更新</span>
       <span class="pill green"><span class="dot"></span>近100期 6杀全中 {{printf "%.1f" .Meta.Period6Pct100}}%</span>
       <a class="gh-link" href="https://github.com/wu529778790/fc3d-kill6" target="_blank" rel="noopener noreferrer" aria-label="GitHub 仓库"><svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
     </div>
   </header>
 
+  <div class="tabs">
+    <input type="radio" name="lot" id="tab-3d" checked>
+    <input type="radio" name="lot" id="tab-ssq">
+    <nav class="tab-bar">
+      <label class="tab-btn" for="tab-3d"><span class="tab-ico">3D</span>福彩3D 六杀</label>
+      <label class="tab-btn" for="tab-ssq"><span class="tab-ico">球</span>双色球 统计</label>
+    </nav>
+    <div class="tab-pane" id="pane-3d">
   <main>
 {{if .Banners.DataFailed}}
 <div class="data-alert"><div class="da-title">数据源异常</div>所有数据源获取失败，页面为最后一次成功数据，请检查数据源（灰鸟 / 17500.cn）。</div>
@@ -464,11 +544,96 @@ footer{padding:22px 0 10px;gap:8px}
       </div>
     </section>
   </main>
+    </div>
+    <div class="tab-pane" id="pane-ssq">
+  <main>
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-left">
+          <div class="kicker">
+            <span class="tag">统计工具</span>
+            <span class="kicker-line">红球 1-33 选 6 · 蓝球 1-16 选 1 · 不承诺预测</span>
+          </div>
+          <h1>双色球 杀号统计工具</h1>
+          <p class="hero-sub">每期开 6 个红球 + 1 个蓝球。这里用历史数据做<strong>排除法（杀号）</strong>和冷热/遗漏统计，帮你缩小选号范围——并如实告诉你：统计方法对双色球没有预测优势。</p>
+          <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">红球 = 红色号码区（1-33 里开 6 个），蓝球 = 蓝色号码区（1-16 里开 1 个）。「杀号」= <strong>帮你排除掉</strong>的号码。</span></div>
+        </div>
+        <div class="issue-badge">
+          <span class="issue-label">最新开奖 · 第 {{.SSQ.Meta.LatestIssue}} 期</span>
+          <span class="issue-value">{{.SSQ.Meta.LatestDate}}</span>
+        </div>
+      </div>
+      <div class="ssq-kill">
+        <div class="sk-head"><span class="sk-title">本期排除（杀号）</span><span class="sk-strategy">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期</span></div>
+        <div class="sk-body">
+          <div class="sk-group"><span class="sk-label rd">杀红球 · 6 个</span><span class="sk-nums">{{range .SSQ.Meta.KillReds}}<b class="nb rd">{{printf "%02d" .}}</b>{{end}}</span></div>
+          <div class="sk-group"><span class="sk-label bd">杀蓝球 · 3 个</span><span class="sk-nums">{{range .SSQ.Meta.KillBlues}}<b class="nb bd">{{printf "%02d" .}}</b>{{end}}</span></div>
+        </div>
+        <div class="sk-note">全量 {{.SSQ.Meta.Total}} 期回测：杀红全避开 <b>{{printf "%.1f" .SSQ.Meta.RedPct}}%</b>（随机基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%）· 杀蓝避开 <b>{{printf "%.1f" .SSQ.Meta.BluePct}}%</b>（基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%）——与基线相当。双色球是组合概率空间，统计无法预测，这是数学事实，不是算法问题。</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">冷热 · 遗漏 · 蓝球频率</h2>
+        <span class="section-meta">近 20 期统计</span>
+        <p class="section-note">人话：哪个红球最近常出（热）、最近少出（冷）、最久没出（遗漏）——仅供参考，不构成出号依据。</p>
+      </div>
+      <div class="ssq-grid">
+        <div class="ssq-card"><div class="ssq-hd"><span>红球热号 Top6</span><span class="mini-tag">近20期</span></div>
+{{range $i, $r := .SSQ.HotReds}}{{if lt $i 6}}<div class="rank-row"><span class="rank-num">{{printf "%02d" $r.Num}}</span><div class="rank-bar"><div class="rank-fill hot" style="width:{{pctW $r.Freq $.SSQ.MaxFreq}}%"></div></div><span class="rank-freq">{{$r.Freq}}次</span></div>{{end}}{{end}}</div>
+        <div class="ssq-card"><div class="ssq-hd"><span>红球冷号 Top6</span><span class="mini-tag">近20期</span></div>
+{{range $i, $r := .SSQ.ColdReds}}{{if lt $i 6}}<div class="rank-row"><span class="rank-num">{{printf "%02d" $r.Num}}</span><div class="rank-bar"><div class="rank-fill cold" style="width:{{pctW $r.Freq $.SSQ.MaxFreq}}%"></div></div><span class="rank-freq">{{$r.Freq}}次</span></div>{{end}}{{end}}</div>
+        <div class="ssq-card"><div class="ssq-hd"><span>红球遗漏 Top6</span><span class="mini-tag">最久没出</span></div>
+{{range $i, $r := .SSQ.MissReds}}{{if lt $i 6}}<div class="rank-row"><span class="rank-num">{{printf "%02d" $r.Num}}</span><div class="rank-bar"><div class="rank-fill miss" style="width:{{pctW $r.Miss $.SSQ.MissMax}}%"></div></div><span class="rank-freq">{{$r.Miss}}期</span></div>{{end}}{{end}}</div>
+        <div class="ssq-card"><div class="ssq-hd"><span>蓝球频率</span><span class="mini-tag">近20期</span></div>
+          <div class="blue-grid">{{range .SSQ.BlueFreq}}<span class="bf"><b>{{printf "%02d" .Num}}</b><i>{{.Freq}}</i></span>{{end}}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">红球和值走势</h2>
+        <span class="section-meta">近 20 期 · 均值 {{.SSQ.SumAvg}}</span>
+        <p class="section-note">人话：和值 = 6 个红球号码相加。双色球红球和值长期围绕均值 102 波动，偏离太大就是冷门组合。</p>
+      </div>
+      <div class="trend-card"><svg viewBox="0 0 600 200" role="img" aria-label="红球和值走势">{{ssqSumSVG .SSQ.SumTrend .SSQ.SumAvg}}</svg></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">回测：策略 vs 随机基线</h2>
+        <span class="section-meta">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期窗口</span>
+        <p class="section-note">人话：把杀号策略拿到过去每一期"提前算好、再对答案"，看命中率和闭眼乱排差多少——结论是基本一样。</p>
+      </div>
+      <div class="bt-grid">
+        <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.RedPct}}%</span><span class="cmp-label">杀红全避开（基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%）</span></div>
+        <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.BluePct}}%</span><span class="cmp-label">杀蓝避开（基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%）</span></div>
+        <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.AllPct}}%</span><span class="cmp-label">红蓝全避开（基线 {{printf "%.1f" .SSQ.Meta.BaseAll}}%）</span></div>
+      </div>
+      <div class="wf-note">Walk-forward 滚动验证{{range .SSQ.Meta.WF}} · 近{{.Label}}全中 {{printf "%.1f" .All6Pct}}%（p={{pf .PVal}}）{{end}}——与随机基线无显著差异（p 值均不显著），如实呈现。</div>
+    </section>
+
+    <details class="terms" id="terms-ssq">
+      <summary><span class="arrow">▸</span><span class="q">?</span>双色球术语表</summary>
+      <dl>
+        <dt>红球 / 蓝球</dt><dd>红球区 1-33 每期开 6 个；蓝球区 1-16 每期开 1 个。红球 + 蓝球构成一注。</dd>
+        <dt>杀号 / 排除</dt><dd>从号码里去掉我们认为"不太会开"的。双色球里数学上做不到准确，仅供缩小选号范围。</dd>
+        <dt>和值</dt><dd>6 个红球号码相加的总和，长期围绕均值 102 波动。</dd>
+        <dt>热号 / 冷号</dt><dd>近 20 期出现次数多 / 少的号码。</dd>
+        <dt>遗漏</dt><dd>某个号码距离上次开出隔了多少期。</dd>
+        <dt>随机基线</dt><dd>闭眼随便排除同样数量的号码，理论上能全中的概率。所有成绩都跟它比。</dd>
+      </dl>
+    </details>
+  </main>
+    </div>
+  </div>
 
   <footer>
-    <span class="foot-text">数据来源：福彩3D 历史开奖数据 · 算法严格不含未来信息 · 仅供研究参考</span>
-    <span class="foot-meta">数据截止 {{.Meta.LatestDate}} · 共{{.Meta.Total}}期 · 每日开奖后自动更新</span>
-    <span class="foot-brand">3D KILL6 · V9.3 六杀制预测引擎</span>
+    <span class="foot-text">数据来源：福彩3D / 双色球 历史开奖数据 · 算法严格不含未来信息 · 仅供研究参考</span>
+    <span class="foot-meta">3D 数据截止 {{.Meta.LatestDate}}{{if .SSQ}} · 双色球截止 {{.SSQ.Meta.LatestDate}}{{end}} · 每日开奖后自动更新</span>
+    <span class="foot-brand">3D KILL6 · V9.3 六杀制预测引擎 + 双色球统计工具</span>
   </footer>
 </div>
 <script>
@@ -504,8 +669,27 @@ footer{padding:22px 0 10px;gap:8px}
 </html>`
 
 // GenerateHTML 渲染完整页面（Rows 自动转为最新在前）
-func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, wf []backtest.WFWindow) (string, error) {
-	t, err := template.New("page").Parse(tmplSrc)
+func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, wf []backtest.WFWindow, sv *SSQView) (string, error) {
+	funcs := template.FuncMap{
+		"pctW": func(v, max int) int {
+			if max <= 0 {
+				return 0
+			}
+			p := v * 100 / max
+			if p > 100 {
+				p = 100
+			}
+			return p
+		},
+		"pf": func(p float64) string {
+			if p < 0.001 {
+				return "<0.001"
+			}
+			return fmt.Sprintf("%.3f", p)
+		},
+		"ssqSumSVG": ssqSumSVG,
+	}
+	t, err := template.New("page").Funcs(funcs).Parse(tmplSrc)
 	if err != nil {
 		return "", err
 	}
@@ -519,12 +703,45 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		Pct6Beat: m.Period6Pct100 - 51.2,
 		WFNote:   wfNote(wf),
 		TrendSVG: trendSVG(rev),
+		SSQ:      sv,
 	}
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+// ssqSumSVG 红球和值走势折线（SVG 片段，含均值虚线）
+func ssqSumSVG(trend []int, avg int) string {
+	n := len(trend)
+	if n == 0 {
+		return ""
+	}
+	const W, H = 600.0, 200.0
+	const padL, padR, padT, padB = 10.0, 40.0, 18.0, 24.0
+	plotW := W - padL - padR
+	plotH := H - padT - padB
+	yMin, yMax := 60.0, 145.0
+	x := func(i int) float64 { return padL + float64(i)*(plotW/float64(n-1)) }
+	y := func(v int) float64 { return padT + (yMax-float64(v))/(yMax-yMin)*plotH }
+
+	pts := make([]string, 0, n)
+	for i, v := range trend {
+		pts = append(pts, fmt.Sprintf("%.1f,%.1f", x(i), y(v)))
+	}
+	var sb strings.Builder
+	// 均值虚线
+	ay := y(avg)
+	sb.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#64748B" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>`, padL, ay, W-padR, ay))
+	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#64748B" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">均值 %d</text>`, W-padR+4, ay+3, avg))
+	// 折线
+	sb.WriteString(`<polyline points="` + strings.Join(pts, " ") + `" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`)
+	// 最新点
+	lx, ly := x(n-1), y(trend[n-1])
+	sb.WriteString(fmt.Sprintf(`<circle cx="%.1f" cy="%.1f" r="3.5" fill="#A78BFA"/>`, lx, ly))
+	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#A78BFA" font-size="13" font-weight="600" font-family="'SF Mono',ui-monospace,Menlo,monospace">%d</text>`, lx-10, ly-10, trend[n-1]))
+	return sb.String()
 }
 
 // wfNote 生成 walk-forward 摘要行（取 100 期窗口）

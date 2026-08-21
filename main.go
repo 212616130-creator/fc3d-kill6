@@ -14,19 +14,21 @@ import (
 
 	"fc3d-kill6/backtest"
 	"fc3d-kill6/data"
+	"fc3d-kill6/engine/ssq"
 	"fc3d-kill6/fetch"
 	"fc3d-kill6/monitor"
 	"fc3d-kill6/report"
 )
 
 func main() {
-	csvPath := flag.String("csv", "fc3d-history.csv", "历史开奖 CSV 路径")
+	csvPath := flag.String("csv", "fc3d-history.csv", "福彩3D CSV 路径")
+	ssqCSVPath := flag.String("ssq-csv", "ssq-history.csv", "双色球 CSV 路径")
 	htmlPath := flag.String("html", "index.html", "输出 HTML 路径")
 	kill6Path := flag.String("kill6", "kill6_history.json", "kill6 监控历史 JSON 路径")
 	flag.Parse()
 
 	fmt.Println("=" + repeat("=", 30))
-	fmt.Println("福彩3D 百十个杀码 · 云端更新 (Go)")
+	fmt.Println("福彩3D 六杀 + 双色球统计 · 云端更新 (Go)")
 	fmt.Println("=" + repeat("=", 30))
 
 	// Step 1: 获取最新开奖
@@ -98,10 +100,42 @@ func main() {
 		fmt.Printf("   ✅ 表现监控: 正常 (单月%+.1fpp, 预警阈值跌破70%%/月降8pp)\n", monthDrop)
 	}
 
+	// Step 4.5: 双色球（统计工具版）
+	fmt.Println("\n🎱 双色球统计...")
+	ssqData, ssqAlive := fetch.FetchLatestSSQ(*ssqCSVPath)
+	if ssqData != nil {
+		added, err := data.AppendSSQCSV(*ssqCSVPath, data.SSQDraw{
+			Issue: ssqData.Issue, Date: ssqData.Date,
+			R1: ssqData.Reds[0], R2: ssqData.Reds[1], R3: ssqData.Reds[2],
+			R4: ssqData.Reds[3], R5: ssqData.Reds[4], R6: ssqData.Reds[5],
+			Blue: ssqData.Blue,
+		})
+		if err != nil {
+			fmt.Printf("  ❌ 双色球追加失败: %v\n", err)
+		} else if added == 1 {
+			fmt.Printf("  ✅ 双色球已追加第%s期 (%s)\n", ssqData.Issue, ssqData.Date)
+		} else {
+			fmt.Printf("  ℹ️ 双色球第%s期已存在\n", ssqData.Issue)
+		}
+	} else if !ssqAlive {
+		fmt.Println("  ⚠️ 双色球数据源全挂，继续用旧数据")
+	}
+	ssqDraws, err := data.LoadSSQCSV(*ssqCSVPath)
+	if err != nil || len(ssqDraws) < 300 {
+		fmt.Printf("  ❌ 双色球数据不足: %v (%d 期)\n", err, len(ssqDraws))
+		os.Exit(1)
+	}
+	ssqStrategy := ssq.StrategyHot // 全量回测中相对最稳（见 ssq_probe）
+	ssqWin := 50
+	ssqRes := backtest.SSQBacktest(ssqDraws, 6, 3, ssqWin, ssqStrategy)
+	ssqView := buildSSQView(ssqRes, ssqDraws)
+	fmt.Printf("  📊 杀%d红+杀%d蓝: 全中%.1f%% (基线%.1f%%) · 最新期 %s\n",
+		ssqRes.Meta.RedN, ssqRes.Meta.BlueN, ssqRes.Meta.AllPct, ssqRes.Meta.BaseAll, ssqRes.Meta.LatestIssue)
+
 	// Step 5: 生成 HTML
 	nextIssue := fetch.NextIssueCalc(m.LatestIssue, m.LatestDate, nextIssueHint(newData))
 	banners := report.Banners{DataUpgrade: triggered, UpgradeReasons: reasons, DataFailed: !dataAlive}
-	html, err := report.GenerateHTML(m, bt.Pred, bt.Rows, banners, nextIssue, wf)
+	html, err := report.GenerateHTML(m, bt.Pred, bt.Rows, banners, nextIssue, wf, ssqView)
 	if err != nil {
 		fmt.Printf("❌ HTML 生成失败: %v\n", err)
 		os.Exit(1)
@@ -112,9 +146,49 @@ func main() {
 	}
 
 	p := bt.Pred
-	fmt.Printf("\n🔮 下一期: %s | 百杀%d,%d 十杀%d,%d 个杀%d,%d\n",
+	fmt.Printf("\n🔮 3D下一期: %s | 百杀%d,%d 十杀%d,%d 个杀%d,%d\n",
 		nextIssue, p.H, p.H2, p.T, p.T2, p.O, p.O2)
 	fmt.Printf("✅ HTML已生成 (%s, %d字节)\n", *htmlPath, len(html))
+}
+
+// buildSSQView 组装双色球页签视图数据（统计榜 + 和值走势）
+func buildSSQView(res backtest.SSQResult, draws []data.SSQDraw) *report.SSQView {
+	const statWin = 20
+	hot := ssq.FreqReds(draws, statWin)
+	cold := make([]ssq.NumFreq, 0, len(hot))
+	// 冷号 = 频率升序（出现少的）
+	for i := len(hot) - 1; i >= 0; i-- {
+		cold = append(cold, hot[i])
+	}
+	miss := ssq.MissReds(draws, statWin)
+	blue := ssq.FreqBlues(draws, statWin)
+	sum := ssq.SumSeries(draws, statWin)
+	sumAvg := 0
+	if len(sum) > 0 {
+		t := 0
+		for _, v := range sum {
+			t += v
+		}
+		sumAvg = t / len(sum)
+	}
+	maxFreq := 1
+	for _, r := range hot {
+		if r.Freq > maxFreq {
+			maxFreq = r.Freq
+		}
+	}
+	missMax := 1
+	for _, r := range miss {
+		if r.Miss > missMax {
+			missMax = r.Miss
+		}
+	}
+	return &report.SSQView{
+		Meta:    res.Meta,
+		HotReds: hot, ColdReds: cold, MissReds: miss, BlueFreq: blue,
+		SumTrend: sum, SumAvg: sumAvg,
+		MaxFreq: maxFreq, MissMax: missMax,
+	}
 }
 
 // nextIssueHint 透传数据源 next_code（跨年安全）
