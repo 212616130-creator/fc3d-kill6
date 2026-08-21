@@ -1329,5 +1329,35 @@ footer{padding:22px 0 10px;gap:8px}
     <span class="foot-brand">3D KILL6 · V9.3 六杀制预测引擎</span>
   </footer>
 </div>
+<script>
+// wx-auth-sdk 可选认证（jsdmirror 主源 + jsdelivr 兜底，加载失败静默不影响页面）
+(function () {
+  var CDNS = [
+    'https://cdn.jsdmirror.com/npm/wx-auth-sdk@1.2.10/dist/wx-auth.umd.js',
+    'https://cdn.jsdelivr.net/npm/wx-auth-sdk@1.2.10/dist/wx-auth.umd.js'
+  ];
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = CDNS[0].replace('wx-auth.umd.js', 'wx-auth.css');
+  document.head.appendChild(css);
+  function load(i) {
+    if (i >= CDNS.length) return;
+    var s = document.createElement('script');
+    s.src = CDNS[i];
+    s.onload = function () {
+      if (window.WxAuth) {
+        WxAuth.init({
+          siteId: 'blog.shenzjd.com',
+          required: false,
+          onVerified: function (u) { console.log('[wx-auth] 认证成功', u); }
+        });
+      }
+    };
+    s.onerror = function () { load(i + 1); };
+    document.body.appendChild(s);
+  }
+  load(0);
+})();
+</script>
 </body>
 </html>
