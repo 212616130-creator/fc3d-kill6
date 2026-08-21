@@ -1,6 +1,8 @@
 name: 百十个杀码每日更新
 
 on:
+  push:
+    branches: [main]   # 代码变更推送后立即构建并部署 Pages
   schedule:
     # 北京时间 22:00 (UTC 14:00) — 开奖(21:15)后执行
     - cron: '0 14 * * *'
