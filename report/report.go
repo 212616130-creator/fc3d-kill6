@@ -227,7 +227,11 @@ h1{font-size:26px}
 .cmp-cell{padding:10px 12px}
 .warn{margin-top:24px;padding:14px 16px;font-size:11px;line-height:1.6}
 .table-wrap{display:none}
-.m-detail{display:flex}
+.m-detail{display:flex;max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 8px 2px 2px;border-radius:14px;border:1px solid var(--border);background:rgba(18,26,43,.4);scrollbar-width:thin;scrollbar-color:rgba(148,163,184,.35) transparent}
+.m-detail::-webkit-scrollbar{width:6px}
+.m-detail::-webkit-scrollbar-track{background:transparent}
+.m-detail::-webkit-scrollbar-thumb{background:rgba(148,163,184,.35);border-radius:3px}
+.m-detail::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,.6)}
 footer{padding:22px 0 10px;gap:8px}
 .foot-text{font-size:10px}
 }
@@ -411,10 +415,7 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		return "", err
 	}
 	rev := reverseRows(rows)
-	mc := rev
-	if len(mc) > 3 {
-		mc = mc[:3]
-	}
+	mc := rev // 移动端卡片 = 全部 100 期，与 section-meta "完整 100 期滚动" 承诺一致
 	data := view{
 		Meta: m, Pred: pred,
 		Rows: rev, MCards: mc,
