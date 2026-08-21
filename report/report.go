@@ -108,13 +108,19 @@ header{display:flex;align-items:center;justify-content:space-between;height:80px
 .kicker-line{font-size:12px;color:var(--text3)}
 h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .hero-sub{font-size:15px;color:var(--text2);max-width:640px;line-height:1.7}
-.plain-tip{display:flex;align-items:flex-start;gap:10px;max-width:640px;margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.28);font-size:12px;line-height:1.7;color:var(--text2)}
-.plain-tip .pt-label{flex:none;margin-top:1px;padding:1px 8px;border-radius:999px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);font-size:10px;font-weight:700;color:var(--green-soft)}
-.plain-tip strong{color:var(--text1)}
+.plain-tip{display:flex;align-items:flex-start;gap:10px;max-width:640px;margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.28);font-size:12px;line-height:1.7;color:var(--text2);flex-wrap:wrap}
+.plain-tip .pt-label{flex:none;margin-top:1px;padding:1px 8px;border-radius:999px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);font-size:10px;font-weight:700;color:var(--green-soft);align-self:flex-start}
+.plain-tip .pt-body{flex:1;min-width:240px}
+.plain-tip strong{color:var(--text1);white-space:nowrap;word-break:keep-all}
+.plain-tip a{color:var(--cyan);text-decoration:none;border-bottom:1px dashed rgba(34,211,238,.4)}
+.plain-tip a:hover{color:var(--cyan-soft);border-bottom-color:var(--cyan-soft)}
 .terms{margin-bottom:16px;border-radius:12px;border:1px solid var(--border-soft);background:rgba(18,26,43,.4);overflow:hidden}
-.terms summary{cursor:pointer;padding:12px 16px;font-size:12px;font-weight:600;color:var(--cyan-soft);list-style:none;user-select:none}
+.terms summary{cursor:pointer;padding:12px 16px;font-size:12px;font-weight:600;color:var(--cyan-soft);list-style:none;user-select:none;display:flex;align-items:center;gap:8px}
 .terms summary::-webkit-details-marker{display:none}
-.terms summary::before{content:"?";display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:8px;border-radius:50%;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.4);font-size:11px;font-weight:700;color:var(--cyan-soft);vertical-align:-4px}
+.terms summary:hover{background:rgba(34,211,238,.04)}
+.terms summary .arrow{display:inline-block;color:var(--cyan);font-size:10px;transition:transform .2s}
+.terms[open] summary .arrow{transform:rotate(90deg)}
+.terms summary .q{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.4);font-size:11px;font-weight:700;color:var(--cyan-soft)}
 .terms[open] summary{border-bottom:1px solid var(--border-soft)}
 .terms dl{margin:0;padding:6px 16px 14px}
 .terms dt{font-size:12px;font-weight:700;color:var(--text1);margin-top:10px}
@@ -302,7 +308,7 @@ footer{padding:22px 0 10px;gap:8px}
           </div>
           <h1>福彩3D 百十个杀码预测</h1>
           <p class="hero-sub">每天开奖一个三位数。我们提前排除 6 个号码（百位 2 个、十位 2 个、个位 2 个），开奖号一个都没被排除 = 全中。近 100 期全中率 {{printf "%.1f" .Meta.Period6Pct100}}%，远超"闭眼随便排除"的 51.2%。</p>
-          <div class="plain-tip"><span class="pt-label">小白版</span>「杀码」就是<strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。下面的表格看不懂？展开术语表。</div>
+          <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">「杀码」就是<strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。看不懂下面的表格？<a href="#terms">点此展开术语表 ↓</a></span></div>
         </div>
         <div class="issue-badge">
           <span class="issue-label">下一期预测 · 第 {{.NextIssue}} 期</span>
@@ -416,8 +422,8 @@ footer{padding:22px 0 10px;gap:8px}
         <h2 class="section-title">近 {{.Meta.BacktestN}} 期回测明细</h2>
         <span class="section-meta">完整 {{.Meta.BacktestN}} 期滚动 · 移动端卡片式</span>
       </div>
-      <details class="terms">
-        <summary>彩票小白？点这里看术语解释</summary>
+      <details class="terms" id="terms">
+        <summary><span class="arrow">▸</span><span class="q">?</span>彩票小白？点这里展开 7 个术语解释</summary>
         <dl>
           <dt>杀码 / 杀</dt><dd>排除掉的号码。「杀」= 排除，是我们对「不会开出来」的判断。</dd>
           <dt>百位 / 十位 / 个位</dt><dd>三位号码的三个位置。例如开奖号 380：3 是百位、8 是十位、0 是个位。</dd>
