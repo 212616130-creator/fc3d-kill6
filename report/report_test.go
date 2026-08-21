@@ -31,6 +31,7 @@ func TestGenerateHTMLCore(t *testing.T) {
 		"小白版",                    // 白话解释卡
 		"排除掉的号码",                 // 术语表：杀=排除
 		"彩票小白",                   // 术语表折叠入口
+		"人话：",                    // 各 section 就近人话注释
 	} {
 		if !strings.Contains(html, want) {
 			t.Errorf("HTML 缺少关键内容: %q", want)

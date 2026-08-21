@@ -150,6 +150,7 @@ h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
 .section-title{font-size:22px;font-weight:700}
 .section-meta{font-size:12px;color:var(--text3)}
+.section-note{margin-top:4px;font-size:12px;color:var(--text3);line-height:1.6}
 .bento{display:grid;grid-template-columns:340px 1fr;gap:20px}
 .big-card{display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:var(--radius);background:var(--surface);border:1px solid rgba(52,211,153,.4);box-shadow:0 14px 30px -8px rgba(0,0,0,.35)}
 .big-top{display:flex;justify-content:space-between;align-items:center}
@@ -241,6 +242,7 @@ h1{font-size:26px}
 .pos-num{font:800 26px var(--font-num)}
 .section{padding-bottom:24px}
 .section-title{font-size:18px}
+.section-note{font-size:11px}
 .bento{grid-template-columns:1fr}
 .big-card{flex-direction:row;align-items:center;padding:16px;gap:16px}
 .big-value{font-size:32px}
@@ -308,7 +310,7 @@ footer{padding:22px 0 10px;gap:8px}
           </div>
           <h1>福彩3D 百十个杀码预测</h1>
           <p class="hero-sub">每天开奖一个三位数。我们提前排除 6 个号码（百位 2 个、十位 2 个、个位 2 个），开奖号一个都没被排除 = 全中。近 100 期全中率 {{printf "%.1f" .Meta.Period6Pct100}}%，远超"闭眼随便排除"的 51.2%。</p>
-          <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">「杀码」就是<strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。看不懂下面的表格？<a href="#terms">点此展开术语表 ↓</a></span></div>
+          <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">「杀码」= <strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。下面三框里的数字，就是今天要排除的 6 个号码。</span></div>
         </div>
         <div class="issue-badge">
           <span class="issue-label">下一期预测 · 第 {{.NextIssue}} 期</span>
@@ -350,6 +352,7 @@ footer{padding:22px 0 10px;gap:8px}
       <div class="section-head">
         <h2 class="section-title">近 {{.Meta.BacktestN}} 期回测</h2>
         <span class="section-meta">3杀综合 {{printf "%.1f" .Meta.AccAll}}% · 6杀全中 {{printf "%.1f" .Meta.Period6Pct100}}% · 随机基线 51.2%</span>
+        <p class="section-note">人话：近 100 天里，有 {{printf "%.1f" .Meta.Period6Pct100}}% 的天数我们把 6 个号码全排对了（闭眼乱排只有 51.2%）。</p>
       </div>
       <div class="bento">
         <div class="big-card">
@@ -376,6 +379,7 @@ footer{padding:22px 0 10px;gap:8px}
       <div class="section-head">
         <h2 class="section-title">V9 六杀引擎</h2>
         <span class="section-meta">kill1 决策树 + kill2 算术公式 · 双引擎独立运算、互为校验</span>
+        <p class="section-note">人话：两套算法互不搭伙、独立计算，两边都算同一个号码，才把它列进排除名单。</p>
       </div>
       <div class="engine-row">
         <div class="eng-card">
@@ -410,6 +414,7 @@ footer{padding:22px 0 10px;gap:8px}
       <div class="section-head">
         <h2 class="section-title">6 杀率趋势</h2>
         <span class="section-meta">滚动 100 期 · 每日自动记录 · 虚线为 70% 预警线与 51.2% 随机基线</span>
+        <p class="section-note">人话：曲线往上 = 最近排得更准；跌到红色虚线以下，就是该警惕的时候。</p>
       </div>
       <div class="trend-card">
         <svg viewBox="0 0 600 200" role="img" aria-label="6杀全中率趋势折线图">{{.TrendSVG}}</svg>
@@ -421,6 +426,7 @@ footer{padding:22px 0 10px;gap:8px}
       <div class="section-head">
         <h2 class="section-title">近 {{.Meta.BacktestN}} 期回测明细</h2>
         <span class="section-meta">完整 {{.Meta.BacktestN}} 期滚动 · 移动端卡片式</span>
+        <p class="section-note">人话：每一行 = 一天。「全中」= 当天排除的 6 个号码一个都没开出来。</p>
       </div>
       <details class="terms" id="terms">
         <summary><span class="arrow">▸</span><span class="q">?</span>彩票小白？点这里展开 7 个术语解释</summary>
