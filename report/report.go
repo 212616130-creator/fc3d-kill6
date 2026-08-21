@@ -231,10 +231,11 @@ header{height:60px}
 .hero-top{flex-direction:column;align-items:stretch;gap:16px}
 h1{font-size:26px}
 .hero-sub{font-size:13px;line-height:1.6;max-width:none}
-.issue-badge{align-items:center;padding:10px 14px;flex-direction:row;justify-content:center;gap:8px;border-radius:999px}
+.issue-badge{display:none}
 .issue-value{font-size:16px}
-.pred-row{grid-template-columns:1fr;gap:12px;display:none}
+.pred-row{display:none}
 .pred-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.section-head{flex-direction:column;align-items:stretch;gap:6px}
 .pred-main{display:flex;flex-direction:column;gap:14px;padding:20px 18px;border-radius:16px;background:linear-gradient(180deg,rgba(23,71,97,.9),rgba(13,20,41,1));border:1px solid rgba(34,211,238,.35);box-shadow:0 14px 28px -8px rgba(0,0,0,.4)}
 .pos-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .pos-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;border-radius:12px;background:rgba(18,26,43,.8);border:1px solid var(--border-soft)}
