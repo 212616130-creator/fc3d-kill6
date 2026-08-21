@@ -3,6 +3,7 @@ package data
 
 import (
 	"encoding/csv"
+	"io"
 	"os"
 	"strconv"
 )
@@ -14,7 +15,7 @@ type Draw struct {
 	B, S, G int
 }
 
-// LoadCSV 读取 fc3d-history.csv，跳过表头与坏行。
+// LoadCSV 读取 fc3d-history.csv，跳过表头与坏行（逐行读取，容忍脏数据）。
 func LoadCSV(path string) ([]Draw, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -22,13 +23,19 @@ func LoadCSV(path string) ([]Draw, error) {
 	}
 	defer f.Close()
 	r := csv.NewReader(f)
-	recs, err := r.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	draws := make([]Draw, 0, len(recs))
-	for i, rec := range recs {
-		if i == 0 || len(rec) < 5 {
+	r.FieldsPerRecord = -1 // 允许行长度不一致，坏行跳过而非整体失败
+	draws := make([]Draw, 0, 4096)
+	first := true
+	for {
+		rec, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil || first {
+			first = false // 首行视为表头
+			continue
+		}
+		if len(rec) < 5 {
 			continue
 		}
 		b, err1 := strconv.Atoi(rec[2])
