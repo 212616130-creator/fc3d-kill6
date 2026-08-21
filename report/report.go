@@ -38,6 +38,7 @@ type SSQView struct {
 	SumAvg   int           // 和值均值
 	MaxFreq  int           // 红球最大频率（榜条宽度基准）
 	MissMax  int           // 遗漏榜最大遗漏（榜条宽度基准）
+	KeepReds []int         // 本期红球保留池（33 减去杀 6）
 }
 
 // view 模板视图（Rows 已按最新在前排序）
@@ -52,6 +53,7 @@ type view struct {
 	Pct6Beat  float64
 	WFNote    string
 	TrendSVG  string
+	SSQRing   string
 	SSQ       *SSQView
 }
 
@@ -189,6 +191,18 @@ h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .bf b{font:600 13px var(--font-num);color:#93C5FD}
 .bf i{font-size:10px;font-style:normal;color:var(--text3)}
 .bt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ssq-hero-card{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 26px;border-radius:var(--radius);background:var(--surface);border:1px solid rgba(52,211,153,.4);box-shadow:0 14px 30px -8px rgba(0,0,0,.35);margin-top:20px}
+.shc-left{display:flex;flex-direction:column;gap:6px}
+.shc-label{font-size:13px;font-weight:600;color:var(--green-soft)}
+.shc-value{font:800 46px var(--font-num);color:var(--green);line-height:1.1}
+.shc-sub{font-size:12px;color:var(--text3)}
+.shc-meta{font-size:12px;color:var(--text2)}
+.shc-meta b{color:var(--green-soft)}
+.shc-ring{flex:none}
+.ssq-keep{margin-top:14px;padding:16px 20px;border-radius:14px;background:var(--surface);border:1px solid var(--border-soft)}
+.keep-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin:12px 0}
+.keep-num{display:flex;align-items:center;justify-content:center;height:28px;border-radius:7px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);font:600 12px var(--font-num);color:var(--green-soft)}
+.disclaimer{margin-top:10px;font-size:10px;color:var(--text3);line-height:1.6}
 .ssq-blue{display:inline-flex;align-items:center;justify-content:center;min-width:24px;padding:1px 6px;margin-left:4px;border-radius:6px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.5);font:700 12px var(--font-num);color:#93C5FD;vertical-align:1px}
 .m-detail.ssq-detail .win{font:600 12px var(--font-num)}
 .issue-badge{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 24px;border-radius:14px;background:var(--surface);border:1px solid rgba(34,211,238,.35);box-shadow:0 0 24px rgba(13,166,237,.15)}
@@ -334,6 +348,9 @@ h1{font-size:26px}
 .tab-btn .tab-ico{width:20px;height:20px}
 .ssq-grid{grid-template-columns:1fr}
 .bt-grid{grid-template-columns:1fr}
+.ssq-hero-card{flex-direction:column;align-items:flex-start;gap:14px;padding:16px 18px}
+.shc-value{font-size:36px}
+.keep-grid{grid-template-columns:repeat(6,1fr)}
 .blue-grid{grid-template-columns:repeat(8,1fr)}
 .bf{padding:6px 0}
 .ssq-kill{padding:14px 14px}
@@ -560,11 +577,11 @@ footer{padding:22px 0 10px;gap:8px}
       <div class="hero-top">
         <div class="hero-left">
           <div class="kicker">
-            <span class="tag">统计工具</span>
-            <span class="kicker-line">红球 1-33 选 6 · 蓝球 1-16 选 1 · 不承诺预测</span>
+            <span class="tag">数据预测</span>
+            <span class="kicker-line">红球 1-33 选 6 · 蓝球 1-16 选 1</span>
           </div>
-          <h1>双色球 杀号统计工具</h1>
-          <p class="hero-sub">每期开 6 个红球 + 1 个蓝球。这里用历史数据做<strong>排除法（杀号）</strong>和冷热/遗漏统计，帮你缩小选号范围——并如实告诉你：统计方法对双色球没有预测优势。</p>
+          <h1>双色球 杀号预测</h1>
+          <p class="hero-sub">每期开 6 个红球 + 1 个蓝球。蓝球只有 16 个，每期排除 3 个——<strong>10 次有 8 次避开</strong>，这是数学上的结构性优势；红球空间大，我们如实展示、不吹。</p>
           <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">红球 = 红色号码区（1-33 里开 6 个），蓝球 = 蓝色号码区（1-16 里开 1 个）。「杀号」= <strong>帮你排除掉</strong>的号码。</span></div>
         </div>
         <div class="issue-badge">
@@ -572,14 +589,29 @@ footer{padding:22px 0 10px;gap:8px}
           <span class="issue-value">{{.SSQ.Meta.LatestDate}}</span>
         </div>
       </div>
+      <div class="ssq-hero-card">
+        <div class="shc-left">
+          <span class="shc-label">杀蓝避开率 · 全量回测</span>
+          <div class="shc-value">{{printf "%.1f" .SSQ.Meta.BluePct}}%</div>
+          <div class="shc-sub">蓝球 16 选 1 · 每期排除 3 个</div>
+          <div class="shc-meta">最近 100 期 <b>{{printf "%.1f" .SSQ.Meta.RecentBluePct}}%</b> · 随机基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%</div>
+        </div>
+        <div class="shc-ring">{{.SSQRing}}</div>
+      </div>
       <div class="ssq-kill">
         <div class="sk-head"><span class="sk-title">下期预测 · 第 {{.SSQ.Meta.NextIssue}} 期</span><span class="sk-strategy">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期统计</span></div>
         <div class="sk-body">
           <div class="sk-group"><span class="sk-label rd">杀红球 · 6 个</span><span class="sk-nums">{{range .SSQ.Meta.KillReds}}<b class="nb rd">{{printf "%02d" .}}</b>{{end}}</span></div>
           <div class="sk-group"><span class="sk-label bd">杀蓝球 · 3 个</span><span class="sk-nums">{{range .SSQ.Meta.KillBlues}}<b class="nb bd">{{printf "%02d" .}}</b>{{end}}</span></div>
         </div>
-        <div class="sk-note">全量 {{.SSQ.Meta.Total}} 期回测：杀蓝避开 <b>{{printf "%.1f" .SSQ.Meta.BluePct}}%</b>（随机基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%——蓝球仅 16 个，杀 3 个天然避开率高）· 杀红全避开 <b>{{printf "%.1f" .SSQ.Meta.RedPct}}%</b>（基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%，与随机相当）。红球组合空间大，统计无法稳定预测，如实呈现。</div>
+        <div class="sk-note">全量 {{.SSQ.Meta.Total}} 期回测：杀蓝避开 <b>{{printf "%.1f" .SSQ.Meta.BluePct}}%</b>（基线 {{printf "%.1f" .SSQ.Meta.BaseBlue}}%——蓝球仅 16 个，排除 3 个天然 8 成避开）· 杀红全避开 <b>{{printf "%.1f" .SSQ.Meta.RedPct}}%</b>（基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%）。红球空间大，如实对照基线。</div>
       </div>
+      <div class="ssq-keep">
+        <div class="sk-head"><span class="sk-title">本期红球保留池</span><span class="sk-strategy">{{len .SSQ.KeepReds}} 个 · 33 减 6</span></div>
+        <div class="keep-grid">{{range .SSQ.KeepReds}}<span class="keep-num">{{printf "%02d" .}}</span>{{end}}</div>
+        <div class="sk-note">保留池 = 33 个红球去掉排除的 6 个。红球命中与随机相当（全量 {{printf "%.1f" .SSQ.Meta.RedPct}}% vs 基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%），仅供参考。</div>
+      </div>
+      <p class="disclaimer">红球组合空间巨大（33 选 6 ≈ 110 万种），历史统计无法稳定预测红球号码；本页数据仅供选号参考，不构成投注建议，请理性娱乐。</p>
     </section>
 
     <section class="section">
@@ -756,7 +788,11 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		Pct6Beat: m.Period6Pct100 - 51.2,
 		WFNote:   wfNote(wf),
 		TrendSVG: trendSVG(rev),
+		SSQRing:  "",
 		SSQ:      sv,
+	}
+	if sv != nil {
+		data.SSQRing = ringSVG(sv.Meta.BluePct)
 	}
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {

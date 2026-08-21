@@ -33,8 +33,8 @@ func TestGenerateHTMLCore(t *testing.T) {
 		"排除掉的号码",                 // 术语表：杀=排除
 		"彩票小白",                   // 术语表折叠入口
 		"人话：",                    // 各 section 就近人话注释
-		"福彩3D 六杀",                // tab 标签
-		"双色球 统计",                 // tab 标签
+		">福彩3D</label>",          // tab 标签
+		">双色球</label>",           // tab 标签
 	} {
 		if !strings.Contains(html, want) {
 			t.Errorf("HTML 缺少关键内容: %q", want)
@@ -52,7 +52,7 @@ func TestGenerateHTMLWithSSQ(t *testing.T) {
 		t.Fatalf("GenerateHTML: %v", err)
 	}
 	for _, want := range []string{
-		"双色球 杀号统计工具",
+		"双色球 杀号预测",
 		"杀红球 · 6 个", "杀蓝球 · 3 个",
 		"红球热号 Top6", "红球冷号 Top6", "红球遗漏 Top6", "蓝球频率",
 		"红球和值走势",

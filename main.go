@@ -184,11 +184,26 @@ func buildSSQView(res backtest.SSQResult, draws []data.SSQDraw) *report.SSQView 
 			missMax = r.Miss
 		}
 	}
+	// 保留池：33 个红球去掉本期杀的 6 个
+	keep := []int{}
+	for n := 1; n <= 33; n++ {
+		excluded := false
+		for _, k := range res.Meta.KillReds {
+			if k == n {
+				excluded = true
+				break
+			}
+		}
+		if !excluded {
+			keep = append(keep, n)
+		}
+	}
 	return &report.SSQView{
 		Meta:    res.Meta,
 		HotReds: hot, ColdReds: cold, MissReds: miss, BlueFreq: blue,
 		SumTrend: sum, SumAvg: sumAvg,
 		MaxFreq: maxFreq, MissMax: missMax,
+		KeepReds: keep,
 	}
 }
 
