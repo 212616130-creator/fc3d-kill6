@@ -186,6 +186,8 @@ h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .bf b{font:600 13px var(--font-num);color:#93C5FD}
 .bf i{font-size:10px;font-style:normal;color:var(--text3)}
 .bt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ssq-blue{display:inline-flex;align-items:center;justify-content:center;min-width:24px;padding:1px 6px;margin-left:4px;border-radius:6px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.5);font:700 12px var(--font-num);color:#93C5FD;vertical-align:1px}
+.m-detail.ssq-detail .win{font:600 12px var(--font-num)}
 .issue-badge{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 24px;border-radius:14px;background:var(--surface);border:1px solid rgba(34,211,238,.35);box-shadow:0 0 24px rgba(13,166,237,.15)}
 .issue-label{font-size:12px;color:var(--text2)}
 .issue-value{font:800 30px var(--font-num);color:var(--cyan-soft)}
@@ -564,7 +566,7 @@ footer{padding:22px 0 10px;gap:8px}
         </div>
       </div>
       <div class="ssq-kill">
-        <div class="sk-head"><span class="sk-title">本期排除（杀号）</span><span class="sk-strategy">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期</span></div>
+        <div class="sk-head"><span class="sk-title">下期预测 · 第 {{.SSQ.Meta.NextIssue}} 期</span><span class="sk-strategy">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期统计</span></div>
         <div class="sk-body">
           <div class="sk-group"><span class="sk-label rd">杀红球 · 6 个</span><span class="sk-nums">{{range .SSQ.Meta.KillReds}}<b class="nb rd">{{printf "%02d" .}}</b>{{end}}</span></div>
           <div class="sk-group"><span class="sk-label bd">杀蓝球 · 3 个</span><span class="sk-nums">{{range .SSQ.Meta.KillBlues}}<b class="nb bd">{{printf "%02d" .}}</b>{{end}}</span></div>
@@ -613,6 +615,35 @@ footer{padding:22px 0 10px;gap:8px}
         <div class="cmp-cell"><span class="cmp-value v-text2">{{printf "%.1f" .SSQ.Meta.AllPct}}%</span><span class="cmp-label">红蓝全避开（基线 {{printf "%.1f" .SSQ.Meta.BaseAll}}%）</span></div>
       </div>
       <div class="wf-note">Walk-forward 滚动验证{{range .SSQ.Meta.WF}} · 近{{.Label}}全中 {{printf "%.1f" .All6Pct}}%（p={{pf .PVal}}）{{end}}——与随机基线无显著差异（p 值均不显著），如实呈现。</div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">近 100 期回测明细</h2>
+        <span class="section-meta">完整 100 期滚动 · 移动端卡片式</span>
+        <p class="section-note">人话：每一行 = 一期。「全中」= 当期排除的 6 红 + 3 蓝一个都没开出来。</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>期号</th><th>日期</th><th>开奖</th><th>杀红</th><th>杀蓝</th><th>结果</th></tr></thead>
+          <tbody>
+{{range .SSQ.Meta.Rows}}
+<tr>
+<td class="issue-no">{{.Issue}}</td><td class="date">{{.Date}}</td>
+<td class="win-num">{{ssqReds .Reds}} <span class="ssq-blue">{{printf "%02d" .Blue}}</span></td>
+<td class="kill-code {{if .RedOK}}ok{{else}}bad{{end}}">{{ssqKills .KillReds}}</td>
+<td class="kill-code {{if .BlueOK}}ok{{else}}bad{{end}}">{{ssqKills .KillBlues}}</td>
+<td><span class="result {{if .AllOK}}ok{{else}}bad{{end}}">{{if .AllOK}}全中{{else}}未中{{end}}</span></td>
+</tr>
+{{end}}
+          </tbody>
+        </table>
+      </div>
+      <div class="m-detail ssq-detail">
+{{range .SSQ.Meta.Rows}}
+<div class="m-card"><div class="left"><span class="issue-no">{{.Issue}}</span><span class="date">{{.Date}}</span></div><span class="win">{{ssqReds .Reds}} · 蓝{{printf "%02d" .Blue}}</span><span class="result {{if .AllOK}}ok{{else}}bad{{end}}">{{if .AllOK}}全中{{else}}未中{{end}}</span></div>
+{{end}}
+      </div>
     </section>
 
     <details class="terms" id="terms-ssq">
@@ -688,6 +719,20 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 			return fmt.Sprintf("%.3f", p)
 		},
 		"ssqSumSVG": ssqSumSVG,
+		"ssqReds": func(rs [6]int) string {
+			parts := make([]string, 6)
+			for i, n := range rs {
+				parts[i] = fmt.Sprintf("%02d", n)
+			}
+			return strings.Join(parts, ",")
+		},
+		"ssqKills": func(a []int) string {
+			parts := make([]string, len(a))
+			for i, n := range a {
+				parts[i] = fmt.Sprintf("%02d", n)
+			}
+			return strings.Join(parts, ",")
+		},
 	}
 	t, err := template.New("page").Funcs(funcs).Parse(tmplSrc)
 	if err != nil {

@@ -128,6 +128,9 @@ func main() {
 	ssqStrategy := ssq.StrategyHot // 全量回测中相对最稳（见 ssq_probe）
 	ssqWin := 50
 	ssqRes := backtest.SSQBacktest(ssqDraws, 6, 3, ssqWin, ssqStrategy)
+	if ssqData != nil {
+		ssqRes.Meta.NextIssue = ssqData.NextIssue
+	}
 	ssqView := buildSSQView(ssqRes, ssqDraws)
 	fmt.Printf("  📊 杀%d红+杀%d蓝: 全中%.1f%% (基线%.1f%%) · 最新期 %s\n",
 		ssqRes.Meta.RedN, ssqRes.Meta.BlueN, ssqRes.Meta.AllPct, ssqRes.Meta.BaseAll, ssqRes.Meta.LatestIssue)
