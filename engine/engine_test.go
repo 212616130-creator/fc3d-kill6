@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// golden 数据结构（tools/gen_golden.py 输出）
+// golden 数据结构（tools/gengolden 输出）
 type goldenFile struct {
 	Source     string        `json:"source"`
 	Total      int           `json:"total"`
