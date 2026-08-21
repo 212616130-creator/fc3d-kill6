@@ -36,7 +36,8 @@ header{display:flex;align-items:center;justify-content:space-between;height:80px
 .kicker-line{font-size:12px;color:var(--text3)}
 h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .hero-sub{font-size:15px;color:var(--text2);max-width:640px;line-height:1.7}
-.hero-pill{margin-top:14px}
+.hero-side{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
+.hero-pill{margin-top:0}
 .hero-pill .pill{padding:6px 12px}
 .plain-tip{display:flex;align-items:flex-start;gap:10px;max-width:640px;margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.28);font-size:12px;line-height:1.7;color:var(--text2);flex-wrap:wrap}
 .plain-tip .pt-label{flex:none;margin-top:1px;padding:1px 8px;border-radius:999px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);font-size:10px;font-weight:700;color:var(--green-soft);align-self:flex-start}
@@ -206,6 +207,8 @@ header{height:60px}
 .brand-icon{width:24px;height:24px}
 .pill{padding:6px 10px;font-size:10px}
 .hero{padding:28px 0 24px;gap:16px}
+.hero-top{align-items:stretch}
+.hero-side{align-items:flex-start}
 .hero-top{flex-direction:column;align-items:stretch;gap:16px}
 h1{font-size:26px}
 .hero-sub{font-size:13px;line-height:1.6;max-width:none}
@@ -303,12 +306,14 @@ footer{padding:22px 0 10px;gap:8px}
           </div>
           <h1>福彩3D 百十个杀码预测</h1>
           <p class="hero-sub">每天开奖一个三位数。我们提前排除 6 个号码（百位 2 个、十位 2 个、个位 2 个），开奖号一个都没被排除 = 全中。近 100 期全中率 81.0%，远超"闭眼随便排除"的 51.2%。</p>
-          <div class="hero-pill"><span class="pill green"><span class="dot"></span>福彩3D · 近100期 6杀全中 81.0%</span></div>
           <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">「杀码」= <strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。下面三框里的数字，就是今天要排除的 6 个号码。</span></div>
         </div>
-        <div class="issue-badge">
-          <span class="issue-label">下一期预测 · 第 2026223 期</span>
-          <span class="issue-value">6 杀码</span>
+        <div class="hero-side">
+          <div class="hero-pill"><span class="pill green"><span class="dot"></span>福彩3D · 近100期 6杀全中 81.0%</span></div>
+          <div class="issue-badge">
+            <span class="issue-label">下一期预测 · 第 2026223 期</span>
+            <span class="issue-value">6 杀码</span>
+          </div>
         </div>
       </div>
 
