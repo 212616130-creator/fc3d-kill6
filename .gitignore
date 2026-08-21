@@ -1,0 +1,6 @@
+# 编译产物（由 go build 生成，CI 中现场构建）
+fc3d-kill6
+
+# Go 临时文件
+*.test
+*.out
