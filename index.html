@@ -36,6 +36,17 @@ header{display:flex;align-items:center;justify-content:space-between;height:80px
 .kicker-line{font-size:12px;color:var(--text3)}
 h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .hero-sub{font-size:15px;color:var(--text2);max-width:640px;line-height:1.7}
+.plain-tip{display:flex;align-items:flex-start;gap:10px;max-width:640px;margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.28);font-size:12px;line-height:1.7;color:var(--text2)}
+.plain-tip .pt-label{flex:none;margin-top:1px;padding:1px 8px;border-radius:999px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);font-size:10px;font-weight:700;color:var(--green-soft)}
+.plain-tip strong{color:var(--text1)}
+.terms{margin-bottom:16px;border-radius:12px;border:1px solid var(--border-soft);background:rgba(18,26,43,.4);overflow:hidden}
+.terms summary{cursor:pointer;padding:12px 16px;font-size:12px;font-weight:600;color:var(--cyan-soft);list-style:none;user-select:none}
+.terms summary::-webkit-details-marker{display:none}
+.terms summary::before{content:"?";display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:8px;border-radius:50%;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.4);font-size:11px;font-weight:700;color:var(--cyan-soft);vertical-align:-4px}
+.terms[open] summary{border-bottom:1px solid var(--border-soft)}
+.terms dl{margin:0;padding:6px 16px 14px}
+.terms dt{font-size:12px;font-weight:700;color:var(--text1);margin-top:10px}
+.terms dd{font-size:12px;line-height:1.7;color:var(--text2);margin:2px 0 0}
 .issue-badge{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 24px;border-radius:14px;background:var(--surface);border:1px solid rgba(34,211,238,.35);box-shadow:0 0 24px rgba(13,166,237,.15)}
 .issue-label{font-size:12px;color:var(--text2)}
 .issue-value{font:800 30px var(--font-num);color:var(--cyan-soft)}
@@ -166,6 +177,9 @@ h1{font-size:26px}
 .formula{font-size:13px}
 .cmp-cell{padding:10px 12px}
 .warn{margin-top:24px;padding:14px 16px;font-size:11px;line-height:1.6}
+.plain-tip{font-size:11px;padding:10px 12px}
+.terms summary{font-size:11px}
+.terms dt,.terms dd{font-size:11px}
 .table-wrap{display:none}
 .m-detail{display:flex;max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 8px 2px 2px;border-radius:14px;border:1px solid var(--border);background:rgba(18,26,43,.4);scrollbar-width:thin;scrollbar-color:rgba(148,163,184,.35) transparent}
 .m-detail::-webkit-scrollbar{width:6px}
@@ -211,7 +225,8 @@ footer{padding:22px 0 10px;gap:8px}
             <span class="kicker-line">双引擎独立杀码 · kill1 决策树 + kill2 算术公式</span>
           </div>
           <h1>福彩3D 百十个杀码预测</h1>
-          <p class="hero-sub">每期输出百 / 十 / 个三位置双杀码。近 100 期 6 杀全中率 81.0%，显著超越随机基线 51.2%。</p>
+          <p class="hero-sub">每天开奖一个三位数。我们提前排除 6 个号码（百位 2 个、十位 2 个、个位 2 个），开奖号一个都没被排除 = 全中。近 100 期全中率 81.0%，远超"闭眼随便排除"的 51.2%。</p>
+          <div class="plain-tip"><span class="pt-label">小白版</span>「杀码」就是<strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。下面的表格看不懂？展开术语表。</div>
         </div>
         <div class="issue-badge">
           <span class="issue-label">下一期预测 · 第 2026223 期</span>
@@ -299,7 +314,7 @@ footer{padding:22px 0 10px;gap:8px}
             <div class="cmp-cell"><span class="cmp-value v-violet">≈66%</span><span class="cmp-label">6杀全中理论上限</span></div>
             <div class="cmp-cell"><span class="cmp-value v-text2">51.2%</span><span class="cmp-label">随机基线</span></div>
           </div>
-          <div class="wf-note">Walk-forward 滚动验证：近 100 期 6 杀全中 81.0% vs 随机基线 51.2%，超越 +29.8pp（z=6.0, p=<0.001）</div>
+          <div class="wf-note">Walk-forward 滚动验证：近 100 期 6 杀全中 81.0% vs 随机基线 51.2%，超越 +29.8pp（z=6.0, p=<0.001）——白话：每期都用开奖前已有的数据提前算好、再对答案，不含任何「马后炮」。</div>
         </div>
       </div>
       <div class="warn">
@@ -325,6 +340,18 @@ footer{padding:22px 0 10px;gap:8px}
         <h2 class="section-title">近 100 期回测明细</h2>
         <span class="section-meta">完整 100 期滚动 · 移动端卡片式</span>
       </div>
+      <details class="terms">
+        <summary>彩票小白？点这里看术语解释</summary>
+        <dl>
+          <dt>杀码 / 杀</dt><dd>排除掉的号码。「杀」= 排除，是我们对「不会开出来」的判断。</dd>
+          <dt>百位 / 十位 / 个位</dt><dd>三位号码的三个位置。例如开奖号 380：3 是百位、8 是十位、0 是个位。</dd>
+          <dt>双杀码</dt><dd>每个位置排除 2 个号码，三个位置共排除 6 个号码。</dd>
+          <dt>6 杀全中</dt><dd>排除的 6 个号码一个都没开出来 = 这期算得准，叫「全中」。</dd>
+          <dt>期号</dt><dd>每天的期次编号，例如 2026222 代表 2026 年第 222 期。</dd>
+          <dt>随机基线</dt><dd>闭着眼随便排除 6 个号码，理论上能全中的概率是 51.2%。页面上所有成绩都是跟它比。</dd>
+          <dt>回测</dt><dd>拿过去 100 天的真实开奖数据，模拟「每天提前算好、再对答案」，验证算法到底准不准。</dd>
+        </dl>
+      </details>
       <div class="table-wrap">
         <table>
           <thead><tr><th>期号</th><th>日期</th><th>开奖</th><th>百位杀码</th><th>十位杀码</th><th>个位杀码</th><th>6杀结果</th></tr></thead>

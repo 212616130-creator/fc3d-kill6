@@ -28,6 +28,9 @@ func TestGenerateHTMLCore(t *testing.T) {
 		"wx-auth-sdk",            // 认证接入
 		"Walk-forward 滚动验证",      // walk-forward 摘要
 		"polyline",               // 趋势图折线
+		"小白版",                    // 白话解释卡
+		"排除掉的号码",                 // 术语表：杀=排除
+		"彩票小白",                   // 术语表折叠入口
 	} {
 		if !strings.Contains(html, want) {
 			t.Errorf("HTML 缺少关键内容: %q", want)
