@@ -3,897 +3,1126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>福彩3D 百十个杀码预测</title>
+<meta name="color-scheme" content="dark">
+<title>福彩3D 百十个杀码预测 · V9.3 六杀制</title>
 <style>
+:root{--bg1:#0A0E17;--bg2:#0D1424;--surface:#121A2B;--surface2:#0D1424;--border:#1E293B;--border-soft:rgba(148,163,184,.12);--text1:#E8EEF9;--text2:#94A3B8;--text3:#64748B;--cyan:#22D3EE;--cyan-soft:#67E8F9;--violet:#A78BFA;--violet-soft:#C4B5FD;--amber:#FBBF24;--amber-soft:#FCD34D;--blue:#60A5FA;--blue-soft:#93C5FD;--green:#34D399;--green-soft:#6EE7B7;--red:#F87171;--radius:16px;--font-cn:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;--font-num:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#f5f7fa;color:#333;padding:12px;max-width:600px;margin:0 auto}
-h1{font-size:18px;text-align:center;color:#1a237e;margin:8px 0 12px}
-.pred{background:linear-gradient(135deg,#1a237e,#283593);border-radius:14px;padding:16px;color:#fff;margin-bottom:14px}
-.pred .badge{font-size:11px;opacity:.8;margin-bottom:4px}
-.pred .issue{font-size:13px;margin-bottom:12px}
-.poses{display:flex;gap:10px}
-.pos{flex:1;text-align:center;background:rgba(255,255,255,.12);border-radius:10px;padding:12px 6px}
-.pos-label{font-size:11px;opacity:.8;margin-bottom:4px}
-.pos-num{font-size:32px;font-weight:800;line-height:1}
-.section-title{font-size:14px;font-weight:700;color:#455a64;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
-.section-title .dot{width:8px;height:8px;border-radius:50%;background:#1a237e;display:inline-block}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.stat{background:#fff;border-radius:10px;padding:12px 8px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.stat .sv{font-size:24px;font-weight:800;color:#1a237e}
-.stat .sl{font-size:11px;color:#78909c;margin-top:2px}
-.stat .se{font-size:10px;color:#90a4ae}
-.period-stat{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:14px}
-.period-stat .pv{font-size:22px;font-weight:800;color:#e65100}
-.period-stat .pl{font-size:11px;color:#78909c}
-.info-card{background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);font-size:12px;line-height:1.7}
-.info-card h3{font-size:13px;color:#37474f;margin-bottom:6px}
-.warn{background:#fff3e0;border-left:3px solid #ff9800;padding:10px 12px;border-radius:0 8px 8px 0;font-size:11px;margin-top:8px;color:#e65100}
-.upgrade-alert{background:linear-gradient(135deg,#b71c1c,#d32f2f);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.7;box-shadow:0 2px 8px rgba(183,28,28,.3)}
-.upgrade-alert .ua-title{font-size:15px;font-weight:800;margin-bottom:4px}
-.data-alert{background:linear-gradient(135deg,#e65100,#f57c00);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.7;box-shadow:0 2px 8px rgba(230,81,0,.3)}
-.data-alert .da-title{font-size:15px;font-weight:800;margin-bottom:4px}
-table{width:100%;border-collapse:collapse;font-size:11px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-th{background:#eceff1;padding:8px 6px;text-align:center;font-weight:600;color:#455a64;position:sticky;top:0}
-td{padding:6px;text-align:center;border-bottom:1px solid #f0f0f0}
-.ok{color:#2e7d32;font-weight:700}
-.bad{color:#c62828;font-weight:700}
-.table-wrap{max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.disclaimer{text-align:center;font-size:10px;color:#90a4ae;margin-top:16px;padding:8px}
-@media(max-width:380px){.pos-num{font-size:26px}.stats{grid-template-columns:repeat(3,1fr);gap:6px}.stat{padding:8px 4px}.stat .sv{font-size:20px}}
+body{font-family:var(--font-cn);background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--text1);min-height:100vh;-webkit-font-smoothing:antialiased}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M48 0H0V48' fill='none' stroke='%2364748B' stroke-opacity='0.07'/%3E%3C/svg%3E");mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%);-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%)}
+.bg-glow{position:fixed;border-radius:50%;filter:blur(90px);z-index:0;pointer-events:none}
+.g1{width:560px;height:560px;top:-210px;left:-170px;background:radial-gradient(circle,rgba(34,64,153,.5),transparent 70%)}
+.g2{width:440px;height:440px;top:-170px;right:-120px;background:radial-gradient(circle,rgba(13,166,237,.30),transparent 70%)}
+.page{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 64px}
+header{display:flex;align-items:center;justify-content:space-between;height:80px;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:34px;height:34px;flex:none}
+.brand-name{font:800 20px var(--font-num);letter-spacing:1px}
+.brand-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:20px}
+.hdr-meta{font-size:12px;color:var(--text2)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600}
+.pill.green{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.5);color:var(--green-soft)}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.hero{padding:56px 0 48px;display:flex;flex-direction:column;gap:28px}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.hero-left{display:flex;flex-direction:column;gap:10px}
+.kicker{display:flex;align-items:center;gap:12px}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;background:var(--surface2);border:1px solid rgba(34,211,238,.4);font-size:11px;font-weight:600;color:var(--cyan-soft)}
+.kicker-line{font-size:12px;color:var(--text3)}
+h1{font-size:44px;font-weight:700;letter-spacing:.5px}
+.hero-sub{font-size:15px;color:var(--text2);max-width:640px;line-height:1.7}
+.issue-badge{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 24px;border-radius:14px;background:var(--surface);border:1px solid rgba(34,211,238,.35);box-shadow:0 0 24px rgba(13,166,237,.15)}
+.issue-label{font-size:12px;color:var(--text2)}
+.issue-value{font:800 30px var(--font-num);color:var(--cyan-soft)}
+.pred-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pred-card{display:flex;flex-direction:column;gap:14px;padding:22px 26px;border-radius:var(--radius);border:1px solid var(--border-soft);box-shadow:0 16px 32px -8px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.pred-card::before{content:"";position:absolute;inset:0;opacity:.9;z-index:0}
+.pred-card>*{position:relative;z-index:1}
+.pred-card.cyan{background:linear-gradient(180deg,rgba(23,71,97,.9),rgba(13,20,41,1));border-color:rgba(34,211,238,.35)}
+.pred-card.violet{background:linear-gradient(180deg,rgba(66,43,112,.9),rgba(13,20,41,1));border-color:rgba(167,139,250,.35)}
+.pred-card.amber{background:linear-gradient(180deg,rgba(107,71,23,.9),rgba(13,20,41,1));border-color:rgba(251,191,36,.35)}
+.pred-head{display:flex;justify-content:space-between;align-items:center}
+.pred-label{font-size:13px;font-weight:600;color:var(--cyan-soft)}
+.pred-card.violet .pred-label{color:var(--violet-soft)}
+.pred-card.amber .pred-label{color:var(--amber-soft)}
+.mini-tag{padding:4px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(23,71,97,.9);border:1px solid rgba(34,211,238,.4);color:var(--cyan-soft)}
+.pred-card.violet .mini-tag{background:rgba(66,43,112,.9);border-color:rgba(167,139,250,.4);color:var(--violet-soft)}
+.pred-card.amber .mini-tag{background:rgba(107,71,23,.9);border-color:rgba(251,191,36,.4);color:var(--amber-soft)}
+.pred-num{font:800 54px/1.1 var(--font-num);letter-spacing:2px;text-align:center;color:var(--cyan)}
+.pred-card.violet .pred-num{color:var(--violet)}
+.pred-card.amber .pred-num{color:var(--amber)}
+.pred-foot{font-size:11px;color:var(--text3);text-align:center}
+.section{padding:0 0 40px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
+.section-title{font-size:22px;font-weight:700}
+.section-meta{font-size:12px;color:var(--text3)}
+.bento{display:grid;grid-template-columns:340px 1fr;gap:20px}
+.big-card{display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:var(--radius);background:var(--surface);border:1px solid rgba(52,211,153,.4);box-shadow:0 14px 30px -8px rgba(0,0,0,.35)}
+.big-top{display:flex;justify-content:space-between;align-items:center}
+.big-label{font-size:14px;font-weight:600;color:var(--green-soft)}
+.ring{flex:none;display:block}
+.big-value{font:800 46px var(--font-num);color:var(--green)}
+.big-sub{font-size:12px;color:var(--text3)}
+.bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--cyan))}
+.grid-6{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.stat-card{display:flex;flex-direction:column;justify-content:space-between;gap:8px;padding:18px 20px;border-radius:14px;background:var(--surface);border:1px solid var(--border-soft)}
+.stat-top{display:flex;justify-content:space-between;align-items:center}
+.stat-label{font-size:12px;color:var(--text2)}
+.stat-badge{font-size:10px;font-weight:600}
+.stat-value{font:800 30px var(--font-num)}
+.engine-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.eng-card{display:flex;flex-direction:column;gap:14px;padding:24px 26px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border-soft)}
+.eng-head{display:flex;align-items:center;gap:10px}
+.eng-num{width:26px;height:26px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font:700 14px var(--font-num);background:var(--surface2);border:1px solid rgba(34,211,238,.4);color:var(--cyan-soft)}
+.eng-card.violet .eng-num{border-color:rgba(167,139,250,.4);color:var(--violet-soft)}
+.eng-card.amber .eng-num{border-color:rgba(251,191,36,.4);color:var(--amber-soft)}
+.eng-title{font-size:15px;font-weight:600}
+.eng-desc{font-size:13px;line-height:1.8;color:var(--text2)}
+.formula-row{display:flex;align-items:center;gap:14px}
+.formula-label{width:40px;font-size:12px;color:var(--text3);flex:none}
+.formula{font:600 15px var(--font-num);color:var(--violet)}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp-cell{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border-soft)}
+.cmp-value{font:800 20px var(--font-num)}
+.cmp-label{font-size:10px;color:var(--text3)}
+.warn{display:flex;align-items:center;gap:12px;padding:18px 22px;margin-top:40px;border-radius:12px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.4);font-size:13px;color:#FDBA74;line-height:1.7}
+.warn-icon{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(251,191,36,.14);border:1.5px solid rgba(251,191,36,.6);font:700 13px var(--font-num);color:var(--amber)}
+.upgrade-alert{display:flex;flex-direction:column;gap:6px;padding:16px 22px;border-radius:12px;margin-bottom:24px;background:linear-gradient(135deg,rgba(185,28,28,.85),rgba(220,38,38,.8));border:1px solid rgba(248,113,113,.5);font-size:13px;line-height:1.7;color:#FECACA}
+.upgrade-alert .ua-title{font-size:15px;font-weight:800;color:#FEE2E2}
+.upgrade-alert .ua-sub{font-size:11px;opacity:.85}
+.data-alert{display:flex;flex-direction:column;gap:6px;padding:16px 22px;border-radius:12px;margin-bottom:24px;background:linear-gradient(135deg,rgba(230,81,0,.85),rgba(245,124,0,.8));border:1px solid rgba(251,146,60,.5);font-size:13px;line-height:1.7;color:#FED7AA}
+.data-alert .da-title{font-size:15px;font-weight:800;color:#FFEDD5}
+.table-wrap{border-radius:14px;border:1px solid var(--border);overflow:hidden;background:rgba(18,26,43,.6)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--surface2);padding:13px 20px;font-size:11px;font-weight:600;color:var(--text3);text-align:center}
+tbody td{padding:14px 20px;text-align:center;border-top:1px solid rgba(30,41,59,.6);color:var(--text2)}
+tbody tr:nth-child(odd){background:rgba(13,20,41,.5)}
+.issue-no{font:400 13px var(--font-num);color:var(--text2)}
+.date{font-size:12px;color:var(--text3)}
+.win-num{font:700 15px var(--font-num);color:var(--text1)}
+.kill-code{font:600 14px var(--font-num)}
+.kill-code.ok{color:var(--green)}
+.kill-code.bad{color:var(--red)}
+.result{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.result.ok{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.5);color:var(--green)}
+.result.bad{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.5);color:var(--red)}
+.m-detail{display:none;flex-direction:column;gap:12px}
+.m-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+.m-card .left{display:flex;flex-direction:column;gap:3px}
+.m-card .issue-no{font-size:13px}
+.m-card .date{font-size:10px}
+.m-card .win{flex:1;text-align:center;font:700 18px var(--font-num);color:var(--text1)}
+.v-cyan{color:var(--cyan)}.v-blue{color:var(--blue)}.v-violet{color:var(--violet)}.v-green{color:var(--green)}.v-amber{color:var(--amber)}.v-text2{color:var(--text2)}
+.v-cyan-soft{color:var(--cyan-soft)}.v-blue-soft{color:var(--blue-soft)}.v-violet-soft{color:var(--violet-soft)}.v-green-soft{color:var(--green-soft)}
+footer{display:flex;flex-direction:column;align-items:center;gap:14px;padding:56px 0 44px;margin-top:16px;border-top:1px solid var(--border)}
+.foot-text{font-size:12px;color:var(--text3)}
+.foot-meta{font-size:11px;color:#475569}
+.foot-brand{font-size:10px;color:#334155}
+@media (max-width:1023px){
+.page{padding:0 20px}
+header{height:60px}
+.hdr-meta{display:none}
+.brand-name{font-size:16px}
+.brand-sub{display:none}
+.brand-icon{width:24px;height:24px}
+.pill{padding:6px 10px;font-size:10px}
+.hero{padding:28px 0 24px;gap:16px}
+.hero-top{flex-direction:column;align-items:stretch;gap:16px}
+h1{font-size:26px}
+.hero-sub{font-size:13px;line-height:1.6;max-width:none}
+.issue-badge{align-items:center;padding:10px 14px;flex-direction:row;justify-content:center;gap:8px;border-radius:999px}
+.issue-value{font-size:16px}
+.pred-row{grid-template-columns:1fr;gap:12px;display:none}
+.pred-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.pred-main{display:flex;flex-direction:column;gap:14px;padding:20px 18px;border-radius:16px;background:linear-gradient(180deg,rgba(23,71,97,.9),rgba(13,20,41,1));border:1px solid rgba(34,211,238,.35);box-shadow:0 14px 28px -8px rgba(0,0,0,.4)}
+.pos-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pos-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 10px;border-radius:12px;background:rgba(18,26,43,.8);border:1px solid var(--border-soft)}
+.pos-label{font-size:10px;color:var(--text2)}
+.pos-num{font:800 26px var(--font-num)}
+.section{padding-bottom:24px}
+.section-title{font-size:18px}
+.bento{grid-template-columns:1fr}
+.big-card{flex-direction:row;align-items:center;padding:16px;gap:16px}
+.big-value{font-size:32px}
+.big-top{flex-direction:column;align-items:flex-start;gap:2px}
+.ring{width:72px;height:72px}
+.grid-6{grid-template-columns:repeat(2,1fr);gap:10px}
+.stat-card{padding:12px 14px;border-radius:12px}
+.stat-value{font-size:22px}
+.engine-row{grid-template-columns:1fr;gap:12px}
+.eng-card{padding:16px}
+.eng-desc{font-size:11px;line-height:1.7}
+.formula{font-size:13px}
+.cmp-cell{padding:10px 12px}
+.warn{margin-top:24px;padding:14px 16px;font-size:11px;line-height:1.6}
+.table-wrap{display:none}
+.m-detail{display:flex}
+footer{padding:22px 0 10px;gap:8px}
+.foot-text{font-size:10px}
+}
+@media (min-width:1024px){.pred-grid{display:none}}
 </style>
 </head>
 <body>
-<h1>福彩3D 百十个杀码预测</h1>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="bg-grid"></div>
+
+<div class="page">
+  <header>
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="32" height="32" rx="9" stroke="#22D3EE" stroke-width="2"/><circle cx="17" cy="17" r="7" stroke="#22D3EE" stroke-width="2"/><circle cx="17" cy="17" r="2.5" fill="#22D3EE"/><path d="M17 2v6M17 26v6M2 17h6M26 17h6" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/></svg>
+      <div>
+        <div class="brand-name">3D KILL6</div>
+        <div class="brand-sub">福彩3D 六杀制预测引擎</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <span class="hdr-meta">数据截止 2026-08-20 · 共8730期</span>
+      <span class="pill green"><span class="dot"></span>近100期 6杀全中 81.0%</span>
+    </div>
+  </header>
+
+  <main>
+
+
+
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-left">
+          <div class="kicker">
+            <span class="tag">V9.3 六杀制</span>
+            <span class="kicker-line">双引擎独立杀码 · kill1 决策树 + kill2 算术公式</span>
+          </div>
+          <h1>福彩3D 百十个杀码预测</h1>
+          <p class="hero-sub">每期输出百 / 十 / 个三位置双杀码。近 100 期 6 杀全中率 81.0%，显著超越随机基线 51.2%。</p>
+        </div>
+        <div class="issue-badge">
+          <span class="issue-label">下一期预测 · 第 2026223 期</span>
+          <span class="issue-value">6 杀码</span>
+        </div>
+      </div>
+
+      <div class="pred-row">
+        <div class="pred-card cyan">
+          <div class="pred-head"><span class="pred-label">百位 · 双杀码</span><span class="mini-tag">kill1 + kill2</span></div>
+          <div class="pred-num">2, 4</div>
+          <div class="pred-foot">kill1 决策树 + 算术公式 · 近100期命中 95.0%</div>
+        </div>
+        <div class="pred-card violet">
+          <div class="pred-head"><span class="pred-label">十位 · 双杀码</span><span class="mini-tag">kill1 + kill2</span></div>
+          <div class="pred-num">3, 0</div>
+          <div class="pred-foot">kill1 决策树 + 算术公式 · 近100期命中 96.0%</div>
+        </div>
+        <div class="pred-card amber">
+          <div class="pred-head"><span class="pred-label">个位 · 双杀码</span><span class="mini-tag">kill1 + kill2</span></div>
+          <div class="pred-num">0, 3</div>
+          <div class="pred-foot">kill1 决策树 + 算术公式 · 近100期命中 95.0%</div>
+        </div>
+      </div>
+
+      <div class="pred-grid">
+        <div class="pred-main">
+          <div class="pred-head"><span class="pred-label">下一期预测 · 第 2026223 期</span><span class="mini-tag">kill1 + kill2</span></div>
+          <div class="pos-row">
+            <div class="pos-card"><span class="pos-label">百位</span><span class="pos-num v-cyan">2, 4</span></div>
+            <div class="pos-card"><span class="pos-label">十位</span><span class="pos-num v-violet">3, 0</span></div>
+            <div class="pos-card"><span class="pos-label">个位</span><span class="pos-num v-amber">0, 3</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">近 100 期回测</h2>
+        <span class="section-meta">3杀综合 95.3% · 6杀全中 81.0% · 随机基线 51.2%</span>
+      </div>
+      <div class="bento">
+        <div class="big-card">
+          <div class="big-top">
+            <span class="big-label">6 杀全中率</span>
+            <svg class="ring" width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="48" cy="48" r="38" stroke="#1E293B" stroke-width="9"/><path d="M86 48A38 38 0 1 1 62.0 12.7" stroke="#34D399" stroke-width="9" stroke-linecap="round"/><text x="48" y="55" text-anchor="middle" font-size="21" font-weight="700" fill="#E8EEF9" font-family="SF Mono,monospace">81%</text></svg>
+          </div>
+          <div class="big-value">81.0%</div>
+          <div class="big-sub">近 100 期 · 超越随机基线 +29.8pp</div>
+          <div class="bar"><div class="bar-fill" style="width:81%"></div></div>
+        </div>
+        <div class="grid-6">
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">百位 · 3杀</span><span class="stat-badge v-cyan-soft">错 5</span></div><div class="stat-value v-cyan">95.0%</div></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">十位 · 3杀</span><span class="stat-badge v-blue-soft">错 4</span></div><div class="stat-value v-blue">96.0%</div></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">个位 · 3杀</span><span class="stat-badge v-violet-soft">错 5</span></div><div class="stat-value v-violet">95.0%</div></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">百位 · kill2</span><span class="stat-badge v-blue-soft">错 2</span></div><div class="stat-value v-blue">98.0%</div></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">十位 · kill2</span><span class="stat-badge v-violet-soft">错 3</span></div><div class="stat-value v-violet">97.0%</div></div>
+          <div class="stat-card"><div class="stat-top"><span class="stat-label">个位 · kill2</span><span class="stat-badge v-green-soft">错 7</span></div><div class="stat-value v-green">93.0%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">V9 六杀引擎</h2>
+        <span class="section-meta">kill1 决策树 + kill2 算术公式 · 双引擎独立运算、互为校验</span>
+      </div>
+      <div class="engine-row">
+        <div class="eng-card">
+          <div class="eng-head"><span class="eng-num">1</span><span class="eng-title">kill1 · V8 条件决策树</span></div>
+          <div class="eng-desc">百位：10 条件决策树，逐期推导最优杀码。<br>十位：V8a 公式法，历经两处漏洞修复。<br>个位：12 条件决策树 + 自适应备份（5 期失败窗口自动切换）。</div>
+        </div>
+        <div class="eng-card violet">
+          <div class="eng-head"><span class="eng-num">2</span><span class="eng-title">kill2 · 独立算术公式</span></div>
+          <div class="formula-row"><span class="formula-label">百位</span><span class="formula">(b − span + 9) mod 10</span></div>
+          <div class="formula-row"><span class="formula-label">十位</span><span class="formula">(s − mid + 5) mod 10</span></div>
+          <div class="formula-row"><span class="formula-label">个位</span><span class="formula">(g² + |b − g|) mod 10</span></div>
+        </div>
+        <div class="eng-card amber">
+          <div class="eng-head"><span class="eng-num">3</span><span class="eng-title">6杀全中 · 数据对比</span></div>
+          <div class="cmp-grid">
+            <div class="cmp-cell"><span class="cmp-value v-green">81.0%</span><span class="cmp-label">近 100 期</span></div>
+            <div class="cmp-cell"><span class="cmp-value v-blue">≈53%</span><span class="cmp-label">全量 8730 期收敛</span></div>
+            <div class="cmp-cell"><span class="cmp-value v-violet">≈66%</span><span class="cmp-label">6杀全中理论上限</span></div>
+            <div class="cmp-cell"><span class="cmp-value v-text2">51.2%</span><span class="cmp-label">随机基线</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="warn">
+        <span class="warn-icon">!</span>
+        <span>理性参考提示：彩票本质是随机游戏，杀码结果仅基于历史数据统计，不构成任何投注建议。请理性娱乐。</span>
+      </div>
+    </section>
 
-<div class="pred">
-<div class="badge">🔮 下一期预测（6杀制）</div>
-<div class="issue">第 <strong>2026223</strong> 期</div>
-<div class="poses">
-<div class="pos"><div class="pos-label">百位杀码</div><div class="pos-num">2,4</div></div>
-<div class="pos"><div class="pos-label">十位杀码</div><div class="pos-num">3,0</div></div>
-<div class="pos"><div class="pos-label">个位杀码</div><div class="pos-num">0,3</div></div>
-</div>
-</div>
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">近 100 期回测明细</h2>
+        <span class="section-meta">完整 100 期滚动 · 移动端卡片式</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>期号</th><th>日期</th><th>开奖</th><th>百位杀码</th><th>十位杀码</th><th>个位杀码</th><th>6杀结果</th></tr></thead>
+          <tbody>
 
-
-
-<div class="section-title"><span class="dot"></span>近100期回测（3杀+6杀）</div>
-<div class="stats">
-<div class="stat"><div class="sv">95.0%</div><div class="sl">百位</div><div class="se">错5期</div></div>
-<div class="stat"><div class="sv">96.0%</div><div class="sl">十位</div><div class="se">错4期</div></div>
-<div class="stat"><div class="sv">95.0%</div><div class="sl">个位</div><div class="se">错5期</div></div>
-</div>
-
-<div class="stats" style="grid-template-columns:repeat(4,1fr)">
-<div class="stat"><div class="sv" style="font-size:20px;color:#0f3460">98.0%</div><div class="sl">百kill2</div></div>
-<div class="stat"><div class="sv" style="font-size:20px;color:#533483">97.0%</div><div class="sl">十kill2</div></div>
-<div class="stat"><div class="sv" style="font-size:20px;color:#16a085">93.0%</div><div class="sl">个kill2</div></div>
-<div class="stat" style="border-top:3px solid #e94560"><div class="sv" style="font-size:20px;color:#e94560">81.0%</div><div class="sl">6杀全中</div></div>
-</div>
-
-<div class="info-card">
-<h3>📋 六杀引擎</h3>
-<p><strong>每位置双杀码：</strong>kill1（条件决策树）+ kill2（独立算术公式）<br>
-<strong>kill2公式：</strong>百=(b-span+9)%10 · 十=(s-mid+5)%10 · 个=(g²+|b-g|)%10<br>
-<strong>6杀全中：</strong>近100期 <strong>81.0%</strong> · 全量≈53%（基线51.2%）</p>
-<div class="warn">
-⚠️ <strong>重要提示：</strong>彩票本质是随机游戏。近100期3杀综合<strong>95.3%</strong>，6杀全中<strong>81.0%</strong>。6杀全中理论上限≈66%。历史回测不代表未来表现，请理性参考，勿沉迷投注。
-</div>
-</div>
-
-<div class="section-title"><span class="dot"></span>近100期回测明细（6杀码）</div>
-<div class="table-wrap">
-<table>
-<thead><tr><th>期号</th><th>日期</th><th>开奖</th><th>百杀</th><th>十杀</th><th>个杀</th><th>6杀</th></tr></thead>
-<tbody>
-
 <tr>
-<td>2026123</td><td>2026-05-13</td><td>200</td>
-<td><span class="ok">✅9,9</span></td>
-<td><span class="ok">✅1,5</span></td>
-<td><span class="ok">✅7,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026222</td><td class="date">2026-08-20</td><td class="win-num">380</td>
+<td class="kill-code bad">3, 4</td>
+<td class="kill-code bad">8, 8</td>
+<td class="kill-code bad">2, 0</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026124</td><td>2026-05-14</td><td>280</td>
-<td><span class="ok">✅3,9</span></td>
-<td><span class="ok">✅2,5</span></td>
-<td><span class="ok">✅3,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026221</td><td class="date">2026-08-19</td><td class="win-num">296</td>
+<td class="kill-code ok">4, 8</td>
+<td class="kill-code bad">1, 9</td>
+<td class="kill-code bad">6, 9</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026125</td><td>2026-05-15</td><td>954</td>
-<td><span class="ok">✅1,3</span></td>
-<td><span class="ok">✅4,1</span></td>
-<td><span class="ok">✅0,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026220</td><td class="date">2026-08-18</td><td class="win-num">373</td>
+<td class="kill-code ok">5, 8</td>
+<td class="kill-code ok">3, 5</td>
+<td class="kill-code ok">5, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026126</td><td>2026-05-16</td><td>846</td>
-<td><span class="ok">✅9,3</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅9,1</span></td>
-<td>✅</td>
+<td class="issue-no">2026219</td><td class="date">2026-08-17</td><td class="win-num">225</td>
+<td class="kill-code ok">8, 6</td>
+<td class="kill-code ok">5, 0</td>
+<td class="kill-code bad">6, 5</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026127</td><td>2026-05-17</td><td>700</td>
-<td><span class="ok">✅2,3</span></td>
-<td><span class="ok">✅4,3</span></td>
-<td><span class="ok">✅6,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026218</td><td class="date">2026-08-16</td><td class="win-num">382</td>
+<td class="kill-code ok">4, 1</td>
+<td class="kill-code ok">2, 5</td>
+<td class="kill-code ok">4, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026128</td><td>2026-05-18</td><td>776</td>
-<td><span class="ok">✅5,9</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅8,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026217</td><td class="date">2026-08-15</td><td class="win-num">882</td>
+<td class="kill-code ok">9, 2</td>
+<td class="kill-code ok">9, 3</td>
+<td class="kill-code ok">0, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026129</td><td>2026-05-19</td><td>023</td>
-<td><span class="ok">✅1,5</span></td>
-<td><span class="ok">✅3,5</span></td>
-<td><span class="ok">✅6,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026216</td><td class="date">2026-08-14</td><td class="win-num">935</td>
+<td class="kill-code ok">5, 4</td>
+<td class="kill-code ok">1, 0</td>
+<td class="kill-code bad">5, 5</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026130</td><td>2026-05-20</td><td>267</td>
-<td><span class="ok">✅6,6</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅0,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026215</td><td class="date">2026-08-13</td><td class="win-num">172</td>
+<td class="kill-code ok">2, 3</td>
+<td class="kill-code ok">0, 4</td>
+<td class="kill-code ok">6, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026131</td><td>2026-05-21</td><td>598</td>
-<td><span class="ok">✅9,6</span></td>
-<td><span class="ok">✅1,5</span></td>
-<td><span class="ok">✅4,4</span></td>
-<td>✅</td>
+<td class="issue-no">2026214</td><td class="date">2026-08-12</td><td class="win-num">545</td>
+<td class="kill-code ok">9, 1</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">4, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026132</td><td>2026-05-22</td><td>756</td>
-<td><span class="ok">✅4,0</span></td>
-<td><span class="ok">✅9,6</span></td>
-<td><span class="ok">✅3,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026213</td><td class="date">2026-08-11</td><td class="win-num">872</td>
+<td class="kill-code bad">8, 9</td>
+<td class="kill-code ok">6, 6</td>
+<td class="kill-code ok">6, 5</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026133</td><td>2026-05-23</td><td>080</td>
-<td><span class="ok">✅9,4</span></td>
-<td><span class="ok">✅3,4</span></td>
-<td><span class="ok">✅7,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026212</td><td class="date">2026-08-10</td><td class="win-num">561</td>
+<td class="kill-code ok">6, 8</td>
+<td class="kill-code ok">7, 8</td>
+<td class="kill-code ok">7, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026134</td><td>2026-05-24</td><td>654</td>
-<td><span class="ok">✅0,1</span></td>
-<td><span class="ok">✅4,3</span></td>
-<td><span class="ok">✅0,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026211</td><td class="date">2026-08-09</td><td class="win-num">708</td>
+<td class="kill-code ok">9, 4</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">0, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026135</td><td>2026-05-25</td><td>487</td>
-<td><span class="ok">✅7,3</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅6,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026210</td><td class="date">2026-08-08</td><td class="win-num">755</td>
+<td class="kill-code ok">0, 4</td>
+<td class="kill-code bad">3, 5</td>
+<td class="kill-code ok">4, 8</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026136</td><td>2026-05-26</td><td>889</td>
-<td><span class="ok">✅1,9</span></td>
-<td><span class="ok">✅1,6</span></td>
-<td><span class="ok">✅7,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026209</td><td class="date">2026-08-07</td><td class="win-num">289</td>
+<td class="kill-code ok">3, 1</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">7, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026137</td><td>2026-05-27</td><td>165</td>
-<td><span class="ok">✅7,6</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅1,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026208</td><td class="date">2026-08-06</td><td class="win-num">632</td>
+<td class="kill-code ok">2, 9</td>
+<td class="kill-code ok">9, 2</td>
+<td class="kill-code bad">2, 6</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026138</td><td>2026-05-28</td><td>790</td>
-<td><span class="ok">✅4,5</span></td>
-<td><span class="ok">✅6,6</span></td>
-<td><span class="ok">✅3,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026207</td><td class="date">2026-08-05</td><td class="win-num">415</td>
+<td class="kill-code bad">4, 1</td>
+<td class="kill-code ok">3, 5</td>
+<td class="kill-code ok">8, 1</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026139</td><td>2026-05-29</td><td>286</td>
-<td><span class="ok">✅1,7</span></td>
-<td><span class="ok">✅7,7</span></td>
-<td><span class="ok">✅0,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026206</td><td class="date">2026-08-04</td><td class="win-num">942</td>
+<td class="kill-code ok">1, 0</td>
+<td class="kill-code ok">9, 2</td>
+<td class="kill-code ok">4, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026140</td><td>2026-05-30</td><td>285</td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅4,7</span></td>
-<td><span class="ok">✅4,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026205</td><td class="date">2026-08-03</td><td class="win-num">814</td>
+<td class="kill-code ok">5, 6</td>
+<td class="kill-code ok">3, 4</td>
+<td class="kill-code ok">5, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026141</td><td>2026-05-31</td><td>397</td>
-<td><span class="ok">✅2,5</span></td>
-<td><span class="ok">✅3,8</span></td>
-<td><span class="ok">✅6,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026204</td><td class="date">2026-08-02</td><td class="win-num">978</td>
+<td class="kill-code ok">4, 1</td>
+<td class="kill-code ok">9, 4</td>
+<td class="kill-code ok">9, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026142</td><td>2026-06-01</td><td>894</td>
-<td><span class="ok">✅1,6</span></td>
-<td><span class="ok">✅1,7</span></td>
-<td><span class="ok">✅2,3</span></td>
-<td>✅</td>
+<td class="issue-no">2026203</td><td class="date">2026-08-01</td><td class="win-num">435</td>
+<td class="kill-code ok">3, 7</td>
+<td class="kill-code bad">3, 5</td>
+<td class="kill-code bad">6, 5</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026143</td><td>2026-06-02</td><td>376</td>
-<td><span class="ok">✅9,2</span></td>
-<td><span class="ok">✅9,6</span></td>
-<td><span class="bad">❌6,0</span></td>
-<td>❌</td>
+<td class="issue-no">2026202</td><td class="date">2026-07-31</td><td class="win-num">988</td>
+<td class="kill-code ok">5, 0</td>
+<td class="kill-code ok">4, 5</td>
+<td class="kill-code ok">5, 3</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026144</td><td>2026-06-03</td><td>726</td>
-<td><span class="ok">✅8,8</span></td>
-<td><span class="ok">✅7,6</span></td>
-<td><span class="ok">✅4,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026201</td><td class="date">2026-07-30</td><td class="win-num">321</td>
+<td class="kill-code bad">3, 0</td>
+<td class="kill-code ok">0, 4</td>
+<td class="kill-code bad">2, 1</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026145</td><td>2026-06-04</td><td>279</td>
-<td><span class="ok">✅7,1</span></td>
-<td><span class="ok">✅9,1</span></td>
-<td><span class="ok">✅5,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026200</td><td class="date">2026-07-29</td><td class="win-num">912</td>
+<td class="kill-code ok">7, 6</td>
+<td class="kill-code ok">7, 9</td>
+<td class="kill-code ok">8, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026146</td><td>2026-06-05</td><td>464</td>
-<td><span class="bad">❌1,4</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅9,8</span></td>
-<td>❌</td>
+<td class="issue-no">2026199</td><td class="date">2026-07-28</td><td class="win-num">591</td>
+<td class="kill-code ok">9, 2</td>
+<td class="kill-code ok">1, 7</td>
+<td class="kill-code ok">0, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026147</td><td>2026-06-06</td><td>712</td>
-<td><span class="ok">✅5,1</span></td>
-<td><span class="ok">✅0,7</span></td>
-<td><span class="ok">✅6,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026198</td><td class="date">2026-07-27</td><td class="win-num">685</td>
+<td class="kill-code ok">2, 0</td>
+<td class="kill-code ok">6, 6</td>
+<td class="kill-code ok">9, 4</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026148</td><td>2026-06-07</td><td>408</td>
-<td><span class="ok">✅3,0</span></td>
-<td><span class="ok">✅6,4</span></td>
-<td><span class="ok">✅1,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026197</td><td class="date">2026-07-26</td><td class="win-num">232</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">5, 2</td>
+<td class="kill-code ok">5, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026149</td><td>2026-06-08</td><td>696</td>
-<td><span class="ok">✅0,5</span></td>
-<td><span class="ok">✅4,1</span></td>
-<td><span class="ok">✅4,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026196</td><td class="date">2026-07-25</td><td class="win-num">419</td>
+<td class="kill-code ok">6, 6</td>
+<td class="kill-code ok">7, 7</td>
+<td class="kill-code ok">7, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026150</td><td>2026-06-09</td><td>720</td>
-<td><span class="ok">✅4,2</span></td>
-<td><span class="ok">✅3,8</span></td>
-<td><span class="ok">✅3,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026195</td><td class="date">2026-07-24</td><td class="win-num">275</td>
+<td class="kill-code ok">8, 5</td>
+<td class="kill-code ok">1, 0</td>
+<td class="kill-code ok">2, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026151</td><td>2026-06-10</td><td>631</td>
-<td><span class="ok">✅8,9</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅0,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026194</td><td class="date">2026-07-23</td><td class="win-num">283</td>
+<td class="kill-code ok">5, 8</td>
+<td class="kill-code bad">8, 6</td>
+<td class="kill-code ok">0, 8</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026152</td><td>2026-06-11</td><td>220</td>
-<td><span class="ok">✅1,0</span></td>
-<td><span class="ok">✅1,5</span></td>
-<td><span class="ok">✅3,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026193</td><td class="date">2026-07-22</td><td class="win-num">254</td>
+<td class="kill-code ok">3, 0</td>
+<td class="kill-code ok">3, 3</td>
+<td class="kill-code bad">4, 6</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026153</td><td>2026-06-12</td><td>887</td>
-<td><span class="ok">✅5,9</span></td>
-<td><span class="ok">✅2,5</span></td>
-<td><span class="ok">✅0,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026192</td><td class="date">2026-07-21</td><td class="win-num">425</td>
+<td class="kill-code bad">4, 9</td>
+<td class="kill-code ok">7, 9</td>
+<td class="kill-code ok">0, 9</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026154</td><td>2026-06-13</td><td>377</td>
-<td><span class="ok">✅4,6</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅9,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026191</td><td class="date">2026-07-20</td><td class="win-num">906</td>
+<td class="kill-code ok">0, 3</td>
+<td class="kill-code ok">8, 5</td>
+<td class="kill-code ok">2, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026155</td><td>2026-06-14</td><td>409</td>
-<td><span class="ok">✅9,8</span></td>
-<td><span class="ok">✅2,5</span></td>
-<td><span class="ok">✅0,3</span></td>
-<td>✅</td>
+<td class="issue-no">2026190</td><td class="date">2026-07-19</td><td class="win-num">026</td>
+<td class="kill-code ok">9, 1</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">4, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026156</td><td>2026-06-15</td><td>162</td>
-<td><span class="ok">✅6,4</span></td>
-<td><span class="ok">✅5,1</span></td>
-<td><span class="ok">✅4,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026189</td><td class="date">2026-07-18</td><td class="win-num">558</td>
+<td class="kill-code bad">4, 5</td>
+<td class="kill-code ok">0, 2</td>
+<td class="kill-code ok">5, 1</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026157</td><td>2026-06-16</td><td>327</td>
-<td><span class="ok">✅1,5</span></td>
-<td><span class="ok">✅9,9</span></td>
-<td><span class="ok">✅0,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026188</td><td class="date">2026-07-17</td><td class="win-num">969</td>
+<td class="kill-code ok">1, 6</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">6, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026158</td><td>2026-06-17</td><td>178</td>
-<td><span class="ok">✅4,7</span></td>
-<td><span class="ok">✅2,4</span></td>
-<td><span class="ok">✅7,3</span></td>
-<td>✅</td>
+<td class="issue-no">2026187</td><td class="date">2026-07-16</td><td class="win-num">023</td>
+<td class="kill-code ok">9, 4</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">0, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026159</td><td>2026-06-18</td><td>995</td>
-<td><span class="ok">✅1,3</span></td>
-<td><span class="ok">✅4,5</span></td>
-<td><span class="ok">✅8,1</span></td>
-<td>✅</td>
+<td class="issue-no">2026186</td><td class="date">2026-07-15</td><td class="win-num">045</td>
+<td class="kill-code ok">1, 6</td>
+<td class="kill-code ok">1, 7</td>
+<td class="kill-code ok">2, 3</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026160</td><td>2026-06-19</td><td>332</td>
-<td><span class="ok">✅5,4</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅6,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026185</td><td class="date">2026-07-14</td><td class="win-num">397</td>
+<td class="kill-code ok">2, 9</td>
+<td class="kill-code ok">2, 3</td>
+<td class="kill-code ok">0, 1</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026161</td><td>2026-06-20</td><td>529</td>
-<td><span class="ok">✅9,1</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅4,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026184</td><td class="date">2026-07-13</td><td class="win-num">902</td>
+<td class="kill-code ok">8, 1</td>
+<td class="kill-code ok">3, 4</td>
+<td class="kill-code ok">6, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026162</td><td>2026-06-21</td><td>585</td>
-<td><span class="ok">✅3,7</span></td>
-<td><span class="ok">✅7,2</span></td>
-<td><span class="bad">❌3,5</span></td>
-<td>❌</td>
+<td class="issue-no">2026183</td><td class="date">2026-07-12</td><td class="win-num">923</td>
+<td class="kill-code ok">5, 1</td>
+<td class="kill-code ok">0, 5</td>
+<td class="kill-code ok">0, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026163</td><td>2026-06-22</td><td>537</td>
-<td><span class="ok">✅4,1</span></td>
-<td><span class="ok">✅0,8</span></td>
-<td><span class="ok">✅0,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026182</td><td class="date">2026-07-11</td><td class="win-num">662</td>
+<td class="kill-code ok">8, 0</td>
+<td class="kill-code ok">3, 8</td>
+<td class="kill-code ok">9, 4</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026164</td><td>2026-06-23</td><td>690</td>
-<td><span class="ok">✅7,0</span></td>
-<td><span class="ok">✅1,3</span></td>
-<td><span class="ok">✅8,1</span></td>
-<td>✅</td>
+<td class="issue-no">2026181</td><td class="date">2026-07-10</td><td class="win-num">818</td>
+<td class="kill-code ok">7, 9</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">0, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026165</td><td>2026-06-24</td><td>424</td>
-<td><span class="ok">✅1,6</span></td>
-<td><span class="ok">✅7,8</span></td>
-<td><span class="ok">✅0,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026180</td><td class="date">2026-07-09</td><td class="win-num">520</td>
+<td class="kill-code ok">3, 2</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">4, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026166</td><td>2026-06-25</td><td>900</td>
-<td><span class="ok">✅8,1</span></td>
-<td><span class="bad">❌0,3</span></td>
-<td><span class="ok">✅2,6</span></td>
-<td>❌</td>
+<td class="issue-no">2026179</td><td class="date">2026-07-08</td><td class="win-num">993</td>
+<td class="kill-code ok">5, 7</td>
+<td class="kill-code ok">8, 5</td>
+<td class="kill-code ok">5, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026167</td><td>2026-06-26</td><td>631</td>
-<td><span class="ok">✅7,9</span></td>
-<td><span class="ok">✅1,5</span></td>
-<td><span class="ok">✅0,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026178</td><td class="date">2026-07-07</td><td class="win-num">266</td>
+<td class="kill-code ok">7, 9</td>
+<td class="kill-code ok">4, 7</td>
+<td class="kill-code ok">8, 4</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026168</td><td>2026-06-27</td><td>130</td>
-<td><span class="ok">✅8,0</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅3,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026177</td><td class="date">2026-07-06</td><td class="win-num">808</td>
+<td class="kill-code ok">2, 4</td>
+<td class="kill-code ok">3, 5</td>
+<td class="kill-code bad">6, 8</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026169</td><td>2026-06-28</td><td>832</td>
-<td><span class="ok">✅6,7</span></td>
-<td><span class="ok">✅1,7</span></td>
-<td><span class="ok">✅0,1</span></td>
-<td>✅</td>
+<td class="issue-no">2026176</td><td class="date">2026-07-05</td><td class="win-num">269</td>
+<td class="kill-code ok">9, 0</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">2, 4</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026170</td><td>2026-06-29</td><td>805</td>
-<td><span class="ok">✅3,1</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅6,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026175</td><td class="date">2026-07-04</td><td class="win-num">421</td>
+<td class="kill-code ok">7, 8</td>
+<td class="kill-code ok">0, 0</td>
+<td class="kill-code ok">4, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026171</td><td>2026-06-30</td><td>134</td>
-<td><span class="ok">✅0,9</span></td>
-<td><span class="ok">✅9,0</span></td>
-<td><span class="ok">✅0,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026174</td><td class="date">2026-07-03</td><td class="win-num">618</td>
+<td class="kill-code ok">8, 4</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">1, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026172</td><td>2026-07-01</td><td>445</td>
-<td><span class="ok">✅9,7</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅3,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026173</td><td class="date">2026-07-02</td><td class="win-num">677</td>
+<td class="kill-code ok">5, 2</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">9, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026173</td><td>2026-07-02</td><td>677</td>
-<td><span class="ok">✅5,2</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅9,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026172</td><td class="date">2026-07-01</td><td class="win-num">445</td>
+<td class="kill-code ok">9, 7</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">3, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026174</td><td>2026-07-03</td><td>618</td>
-<td><span class="ok">✅8,4</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅1,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026171</td><td class="date">2026-06-30</td><td class="win-num">134</td>
+<td class="kill-code ok">0, 9</td>
+<td class="kill-code ok">9, 0</td>
+<td class="kill-code ok">0, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026175</td><td>2026-07-04</td><td>421</td>
-<td><span class="ok">✅7,8</span></td>
-<td><span class="ok">✅0,0</span></td>
-<td><span class="ok">✅4,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026170</td><td class="date">2026-06-29</td><td class="win-num">805</td>
+<td class="kill-code ok">3, 1</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">6, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026176</td><td>2026-07-05</td><td>269</td>
-<td><span class="ok">✅9,0</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅2,4</span></td>
-<td>✅</td>
+<td class="issue-no">2026169</td><td class="date">2026-06-28</td><td class="win-num">832</td>
+<td class="kill-code ok">6, 7</td>
+<td class="kill-code ok">1, 7</td>
+<td class="kill-code ok">0, 1</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026177</td><td>2026-07-06</td><td>808</td>
-<td><span class="ok">✅2,4</span></td>
-<td><span class="ok">✅3,5</span></td>
-<td><span class="bad">❌6,8</span></td>
-<td>❌</td>
+<td class="issue-no">2026168</td><td class="date">2026-06-27</td><td class="win-num">130</td>
+<td class="kill-code ok">8, 0</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">3, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026178</td><td>2026-07-07</td><td>266</td>
-<td><span class="ok">✅7,9</span></td>
-<td><span class="ok">✅4,7</span></td>
-<td><span class="ok">✅8,4</span></td>
-<td>✅</td>
+<td class="issue-no">2026167</td><td class="date">2026-06-26</td><td class="win-num">631</td>
+<td class="kill-code ok">7, 9</td>
+<td class="kill-code ok">1, 5</td>
+<td class="kill-code ok">0, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026179</td><td>2026-07-08</td><td>993</td>
-<td><span class="ok">✅5,7</span></td>
-<td><span class="ok">✅8,5</span></td>
-<td><span class="ok">✅5,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026166</td><td class="date">2026-06-25</td><td class="win-num">900</td>
+<td class="kill-code ok">8, 1</td>
+<td class="kill-code bad">0, 3</td>
+<td class="kill-code ok">2, 6</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026180</td><td>2026-07-09</td><td>520</td>
-<td><span class="ok">✅3,2</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅4,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026165</td><td class="date">2026-06-24</td><td class="win-num">424</td>
+<td class="kill-code ok">1, 6</td>
+<td class="kill-code ok">7, 8</td>
+<td class="kill-code ok">0, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026181</td><td>2026-07-10</td><td>818</td>
-<td><span class="ok">✅7,9</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅0,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026164</td><td class="date">2026-06-23</td><td class="win-num">690</td>
+<td class="kill-code ok">7, 0</td>
+<td class="kill-code ok">1, 3</td>
+<td class="kill-code ok">8, 1</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026182</td><td>2026-07-11</td><td>662</td>
-<td><span class="ok">✅8,0</span></td>
-<td><span class="ok">✅3,8</span></td>
-<td><span class="ok">✅9,4</span></td>
-<td>✅</td>
+<td class="issue-no">2026163</td><td class="date">2026-06-22</td><td class="win-num">537</td>
+<td class="kill-code ok">4, 1</td>
+<td class="kill-code ok">0, 8</td>
+<td class="kill-code ok">0, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026183</td><td>2026-07-12</td><td>923</td>
-<td><span class="ok">✅5,1</span></td>
-<td><span class="ok">✅0,5</span></td>
-<td><span class="ok">✅0,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026162</td><td class="date">2026-06-21</td><td class="win-num">585</td>
+<td class="kill-code ok">3, 7</td>
+<td class="kill-code ok">7, 2</td>
+<td class="kill-code bad">3, 5</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026184</td><td>2026-07-13</td><td>902</td>
-<td><span class="ok">✅8,1</span></td>
-<td><span class="ok">✅3,4</span></td>
-<td><span class="ok">✅6,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026161</td><td class="date">2026-06-20</td><td class="win-num">529</td>
+<td class="kill-code ok">9, 1</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">4, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026185</td><td>2026-07-14</td><td>397</td>
-<td><span class="ok">✅2,9</span></td>
-<td><span class="ok">✅2,3</span></td>
-<td><span class="ok">✅0,1</span></td>
-<td>✅</td>
+<td class="issue-no">2026160</td><td class="date">2026-06-19</td><td class="win-num">332</td>
+<td class="kill-code ok">5, 4</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">6, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026186</td><td>2026-07-15</td><td>045</td>
-<td><span class="ok">✅1,6</span></td>
-<td><span class="ok">✅1,7</span></td>
-<td><span class="ok">✅2,3</span></td>
-<td>✅</td>
+<td class="issue-no">2026159</td><td class="date">2026-06-18</td><td class="win-num">995</td>
+<td class="kill-code ok">1, 3</td>
+<td class="kill-code ok">4, 5</td>
+<td class="kill-code ok">8, 1</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026187</td><td>2026-07-16</td><td>023</td>
-<td><span class="ok">✅9,4</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅0,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026158</td><td class="date">2026-06-17</td><td class="win-num">178</td>
+<td class="kill-code ok">4, 7</td>
+<td class="kill-code ok">2, 4</td>
+<td class="kill-code ok">7, 3</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026188</td><td>2026-07-17</td><td>969</td>
-<td><span class="ok">✅1,6</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅6,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026157</td><td class="date">2026-06-16</td><td class="win-num">327</td>
+<td class="kill-code ok">1, 5</td>
+<td class="kill-code ok">9, 9</td>
+<td class="kill-code ok">0, 5</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026189</td><td>2026-07-18</td><td>558</td>
-<td><span class="bad">❌4,5</span></td>
-<td><span class="ok">✅0,2</span></td>
-<td><span class="ok">✅5,1</span></td>
-<td>❌</td>
+<td class="issue-no">2026156</td><td class="date">2026-06-15</td><td class="win-num">162</td>
+<td class="kill-code ok">6, 4</td>
+<td class="kill-code ok">5, 1</td>
+<td class="kill-code ok">4, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026190</td><td>2026-07-19</td><td>026</td>
-<td><span class="ok">✅9,1</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅4,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026155</td><td class="date">2026-06-14</td><td class="win-num">409</td>
+<td class="kill-code ok">9, 8</td>
+<td class="kill-code ok">2, 5</td>
+<td class="kill-code ok">0, 3</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026191</td><td>2026-07-20</td><td>906</td>
-<td><span class="ok">✅0,3</span></td>
-<td><span class="ok">✅8,5</span></td>
-<td><span class="ok">✅2,2</span></td>
-<td>✅</td>
+<td class="issue-no">2026154</td><td class="date">2026-06-13</td><td class="win-num">377</td>
+<td class="kill-code ok">4, 6</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">9, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026192</td><td>2026-07-21</td><td>425</td>
-<td><span class="bad">❌4,9</span></td>
-<td><span class="ok">✅7,9</span></td>
-<td><span class="ok">✅0,9</span></td>
-<td>❌</td>
+<td class="issue-no">2026153</td><td class="date">2026-06-12</td><td class="win-num">887</td>
+<td class="kill-code ok">5, 9</td>
+<td class="kill-code ok">2, 5</td>
+<td class="kill-code ok">0, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026193</td><td>2026-07-22</td><td>254</td>
-<td><span class="ok">✅3,0</span></td>
-<td><span class="ok">✅3,3</span></td>
-<td><span class="bad">❌4,6</span></td>
-<td>❌</td>
+<td class="issue-no">2026152</td><td class="date">2026-06-11</td><td class="win-num">220</td>
+<td class="kill-code ok">1, 0</td>
+<td class="kill-code ok">1, 5</td>
+<td class="kill-code ok">3, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026194</td><td>2026-07-23</td><td>283</td>
-<td><span class="ok">✅5,8</span></td>
-<td><span class="bad">❌8,6</span></td>
-<td><span class="ok">✅0,8</span></td>
-<td>❌</td>
+<td class="issue-no">2026151</td><td class="date">2026-06-10</td><td class="win-num">631</td>
+<td class="kill-code ok">8, 9</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">0, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026195</td><td>2026-07-24</td><td>275</td>
-<td><span class="ok">✅8,5</span></td>
-<td><span class="ok">✅1,0</span></td>
-<td><span class="ok">✅2,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026150</td><td class="date">2026-06-09</td><td class="win-num">720</td>
+<td class="kill-code ok">4, 2</td>
+<td class="kill-code ok">3, 8</td>
+<td class="kill-code ok">3, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026196</td><td>2026-07-25</td><td>419</td>
-<td><span class="ok">✅6,6</span></td>
-<td><span class="ok">✅7,7</span></td>
-<td><span class="ok">✅7,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026149</td><td class="date">2026-06-08</td><td class="win-num">696</td>
+<td class="kill-code ok">0, 5</td>
+<td class="kill-code ok">4, 1</td>
+<td class="kill-code ok">4, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026197</td><td>2026-07-26</td><td>232</td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅5,2</span></td>
-<td><span class="ok">✅5,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026148</td><td class="date">2026-06-07</td><td class="win-num">408</td>
+<td class="kill-code ok">3, 0</td>
+<td class="kill-code ok">6, 4</td>
+<td class="kill-code ok">1, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026198</td><td>2026-07-27</td><td>685</td>
-<td><span class="ok">✅2,0</span></td>
-<td><span class="ok">✅6,6</span></td>
-<td><span class="ok">✅9,4</span></td>
-<td>✅</td>
+<td class="issue-no">2026147</td><td class="date">2026-06-06</td><td class="win-num">712</td>
+<td class="kill-code ok">5, 1</td>
+<td class="kill-code ok">0, 7</td>
+<td class="kill-code ok">6, 6</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026199</td><td>2026-07-28</td><td>591</td>
-<td><span class="ok">✅9,2</span></td>
-<td><span class="ok">✅1,7</span></td>
-<td><span class="ok">✅0,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026146</td><td class="date">2026-06-05</td><td class="win-num">464</td>
+<td class="kill-code bad">1, 4</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">9, 8</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026200</td><td>2026-07-29</td><td>912</td>
-<td><span class="ok">✅7,6</span></td>
-<td><span class="ok">✅7,9</span></td>
-<td><span class="ok">✅8,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026145</td><td class="date">2026-06-04</td><td class="win-num">279</td>
+<td class="kill-code ok">7, 1</td>
+<td class="kill-code ok">9, 1</td>
+<td class="kill-code ok">5, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026201</td><td>2026-07-30</td><td>321</td>
-<td><span class="bad">❌3,0</span></td>
-<td><span class="ok">✅0,4</span></td>
-<td><span class="bad">❌2,1</span></td>
-<td>❌</td>
+<td class="issue-no">2026144</td><td class="date">2026-06-03</td><td class="win-num">726</td>
+<td class="kill-code ok">8, 8</td>
+<td class="kill-code ok">7, 6</td>
+<td class="kill-code ok">4, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026202</td><td>2026-07-31</td><td>988</td>
-<td><span class="ok">✅5,0</span></td>
-<td><span class="ok">✅4,5</span></td>
-<td><span class="ok">✅5,3</span></td>
-<td>✅</td>
+<td class="issue-no">2026143</td><td class="date">2026-06-02</td><td class="win-num">376</td>
+<td class="kill-code ok">9, 2</td>
+<td class="kill-code ok">9, 6</td>
+<td class="kill-code bad">6, 0</td>
+<td><span class="result bad">未中</span></td>
 </tr>
 
 <tr>
-<td>2026203</td><td>2026-08-01</td><td>435</td>
-<td><span class="ok">✅3,7</span></td>
-<td><span class="bad">❌3,5</span></td>
-<td><span class="bad">❌6,5</span></td>
-<td>❌</td>
+<td class="issue-no">2026142</td><td class="date">2026-06-01</td><td class="win-num">894</td>
+<td class="kill-code ok">1, 6</td>
+<td class="kill-code ok">1, 7</td>
+<td class="kill-code ok">2, 3</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026204</td><td>2026-08-02</td><td>978</td>
-<td><span class="ok">✅4,1</span></td>
-<td><span class="ok">✅9,4</span></td>
-<td><span class="ok">✅9,6</span></td>
-<td>✅</td>
+<td class="issue-no">2026141</td><td class="date">2026-05-31</td><td class="win-num">397</td>
+<td class="kill-code ok">2, 5</td>
+<td class="kill-code ok">3, 8</td>
+<td class="kill-code ok">6, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026205</td><td>2026-08-03</td><td>814</td>
-<td><span class="ok">✅5,6</span></td>
-<td><span class="ok">✅3,4</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026140</td><td class="date">2026-05-30</td><td class="win-num">285</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">4, 7</td>
+<td class="kill-code ok">4, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026206</td><td>2026-08-04</td><td>942</td>
-<td><span class="ok">✅1,0</span></td>
-<td><span class="ok">✅9,2</span></td>
-<td><span class="ok">✅4,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026139</td><td class="date">2026-05-29</td><td class="win-num">286</td>
+<td class="kill-code ok">1, 7</td>
+<td class="kill-code ok">7, 7</td>
+<td class="kill-code ok">0, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026207</td><td>2026-08-05</td><td>415</td>
-<td><span class="bad">❌4,1</span></td>
-<td><span class="ok">✅3,5</span></td>
-<td><span class="ok">✅8,1</span></td>
-<td>❌</td>
+<td class="issue-no">2026138</td><td class="date">2026-05-28</td><td class="win-num">790</td>
+<td class="kill-code ok">4, 5</td>
+<td class="kill-code ok">6, 6</td>
+<td class="kill-code ok">3, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026208</td><td>2026-08-06</td><td>632</td>
-<td><span class="ok">✅2,9</span></td>
-<td><span class="ok">✅9,2</span></td>
-<td><span class="bad">❌2,6</span></td>
-<td>❌</td>
+<td class="issue-no">2026137</td><td class="date">2026-05-27</td><td class="win-num">165</td>
+<td class="kill-code ok">7, 6</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">1, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026209</td><td>2026-08-07</td><td>289</td>
-<td><span class="ok">✅3,1</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td><span class="ok">✅7,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026136</td><td class="date">2026-05-26</td><td class="win-num">889</td>
+<td class="kill-code ok">1, 9</td>
+<td class="kill-code ok">1, 6</td>
+<td class="kill-code ok">7, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026210</td><td>2026-08-08</td><td>755</td>
-<td><span class="ok">✅0,4</span></td>
-<td><span class="bad">❌3,5</span></td>
-<td><span class="ok">✅4,8</span></td>
-<td>❌</td>
+<td class="issue-no">2026135</td><td class="date">2026-05-25</td><td class="win-num">487</td>
+<td class="kill-code ok">7, 3</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">6, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026211</td><td>2026-08-09</td><td>708</td>
-<td><span class="ok">✅9,4</span></td>
-<td><span class="ok">✅9,5</span></td>
-<td><span class="ok">✅0,7</span></td>
-<td>✅</td>
+<td class="issue-no">2026134</td><td class="date">2026-05-24</td><td class="win-num">654</td>
+<td class="kill-code ok">0, 1</td>
+<td class="kill-code ok">4, 3</td>
+<td class="kill-code ok">0, 0</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026212</td><td>2026-08-10</td><td>561</td>
-<td><span class="ok">✅6,8</span></td>
-<td><span class="ok">✅7,8</span></td>
-<td><span class="ok">✅7,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026133</td><td class="date">2026-05-23</td><td class="win-num">080</td>
+<td class="kill-code ok">9, 4</td>
+<td class="kill-code ok">3, 4</td>
+<td class="kill-code ok">7, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026213</td><td>2026-08-11</td><td>872</td>
-<td><span class="bad">❌8,9</span></td>
-<td><span class="ok">✅6,6</span></td>
-<td><span class="ok">✅6,5</span></td>
-<td>❌</td>
+<td class="issue-no">2026132</td><td class="date">2026-05-22</td><td class="win-num">756</td>
+<td class="kill-code ok">4, 0</td>
+<td class="kill-code ok">9, 6</td>
+<td class="kill-code ok">3, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026214</td><td>2026-08-12</td><td>545</td>
-<td><span class="ok">✅9,1</span></td>
-<td><span class="ok">✅5,5</span></td>
-<td><span class="ok">✅4,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026131</td><td class="date">2026-05-21</td><td class="win-num">598</td>
+<td class="kill-code ok">9, 6</td>
+<td class="kill-code ok">1, 5</td>
+<td class="kill-code ok">4, 4</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026215</td><td>2026-08-13</td><td>172</td>
-<td><span class="ok">✅2,3</span></td>
-<td><span class="ok">✅0,4</span></td>
-<td><span class="ok">✅6,5</span></td>
-<td>✅</td>
+<td class="issue-no">2026130</td><td class="date">2026-05-20</td><td class="win-num">267</td>
+<td class="kill-code ok">6, 6</td>
+<td class="kill-code ok">7, 5</td>
+<td class="kill-code ok">0, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026216</td><td>2026-08-14</td><td>935</td>
-<td><span class="ok">✅5,4</span></td>
-<td><span class="ok">✅1,0</span></td>
-<td><span class="bad">❌5,5</span></td>
-<td>❌</td>
+<td class="issue-no">2026129</td><td class="date">2026-05-19</td><td class="win-num">023</td>
+<td class="kill-code ok">1, 5</td>
+<td class="kill-code ok">3, 5</td>
+<td class="kill-code ok">6, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026217</td><td>2026-08-15</td><td>882</td>
-<td><span class="ok">✅9,2</span></td>
-<td><span class="ok">✅9,3</span></td>
-<td><span class="ok">✅0,9</span></td>
-<td>✅</td>
+<td class="issue-no">2026128</td><td class="date">2026-05-18</td><td class="win-num">776</td>
+<td class="kill-code ok">5, 9</td>
+<td class="kill-code ok">9, 5</td>
+<td class="kill-code ok">8, 7</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026218</td><td>2026-08-16</td><td>382</td>
-<td><span class="ok">✅4,1</span></td>
-<td><span class="ok">✅2,5</span></td>
-<td><span class="ok">✅4,0</span></td>
-<td>✅</td>
+<td class="issue-no">2026127</td><td class="date">2026-05-17</td><td class="win-num">700</td>
+<td class="kill-code ok">2, 3</td>
+<td class="kill-code ok">4, 3</td>
+<td class="kill-code ok">6, 8</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026219</td><td>2026-08-17</td><td>225</td>
-<td><span class="ok">✅8,6</span></td>
-<td><span class="ok">✅5,0</span></td>
-<td><span class="bad">❌6,5</span></td>
-<td>❌</td>
+<td class="issue-no">2026126</td><td class="date">2026-05-16</td><td class="win-num">846</td>
+<td class="kill-code ok">9, 3</td>
+<td class="kill-code ok">5, 5</td>
+<td class="kill-code ok">9, 1</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026220</td><td>2026-08-18</td><td>373</td>
-<td><span class="ok">✅5,8</span></td>
-<td><span class="ok">✅3,5</span></td>
-<td><span class="ok">✅5,8</span></td>
-<td>✅</td>
+<td class="issue-no">2026125</td><td class="date">2026-05-15</td><td class="win-num">954</td>
+<td class="kill-code ok">1, 3</td>
+<td class="kill-code ok">4, 1</td>
+<td class="kill-code ok">0, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026221</td><td>2026-08-19</td><td>296</td>
-<td><span class="ok">✅4,8</span></td>
-<td><span class="bad">❌1,9</span></td>
-<td><span class="bad">❌6,9</span></td>
-<td>❌</td>
+<td class="issue-no">2026124</td><td class="date">2026-05-14</td><td class="win-num">280</td>
+<td class="kill-code ok">3, 9</td>
+<td class="kill-code ok">2, 5</td>
+<td class="kill-code ok">3, 2</td>
+<td><span class="result ok">全中</span></td>
 </tr>
 
 <tr>
-<td>2026222</td><td>2026-08-20</td><td>380</td>
-<td><span class="bad">❌3,4</span></td>
-<td><span class="bad">❌8,8</span></td>
-<td><span class="bad">❌2,0</span></td>
-<td>❌</td>
+<td class="issue-no">2026123</td><td class="date">2026-05-13</td><td class="win-num">200</td>
+<td class="kill-code ok">9, 9</td>
+<td class="kill-code ok">1, 5</td>
+<td class="kill-code ok">7, 9</td>
+<td><span class="result ok">全中</span></td>
 </tr>
+
+          </tbody>
+        </table>
+      </div>
+      <div class="m-detail">
+
+<div class="m-card"><div class="left"><span class="issue-no">2026222</span><span class="date">2026-08-20</span></div><span class="win">380</span><span class="result bad">未中</span></div>
+
+<div class="m-card"><div class="left"><span class="issue-no">2026221</span><span class="date">2026-08-19</span></div><span class="win">296</span><span class="result bad">未中</span></div>
+
+<div class="m-card"><div class="left"><span class="issue-no">2026220</span><span class="date">2026-08-18</span></div><span class="win">373</span><span class="result ok">全中</span></div>
 
-</tbody>
-</table>
-</div>
+      </div>
+    </section>
+  </main>
 
-<div class="disclaimer">
-数据来源：福彩3D历史开奖数据 | 算法严格不含未来信息 | 仅供研究参考<br>
-数据截止 2026-08-20 · 共8730期
+  <footer>
+    <span class="foot-text">数据来源：福彩3D 历史开奖数据 · 算法严格不含未来信息 · 仅供研究参考</span>
+    <span class="foot-meta">数据截止 2026-08-20 · 共8730期 · 每日开奖后自动更新</span>
+    <span class="foot-brand">3D KILL6 · V9.3 六杀制预测引擎</span>
+  </footer>
 </div>
 </body>
 </html>

@@ -28,6 +28,7 @@ type Meta struct {
 	AccAll           float64
 
 	AccH2, AccT2, AccO2 float64
+	ErrH2, ErrT2, ErrO2 int
 	All6                int
 	All6Pct             float64
 
@@ -143,6 +144,7 @@ func RunAll(draws []data.Draw) *Result {
 		ErrH: n - cor[0], ErrT: n - cor[1], ErrO: n - cor[2],
 		AccAll: pct(cor[0]+cor[1]+cor[2], n*3),
 		AccH2:  pct(cor2[0], n), AccT2: pct(cor2[1], n), AccO2: pct(cor2[2], n),
+		ErrH2: n - cor2[0], ErrT2: n - cor2[1], ErrO2: n - cor2[2],
 		All6: all6, All6Pct: pct(all6, n),
 		PeriodCorrect100: pc100, PeriodN100: n100, AccPeriod100: pct(pc100, n100),
 		Period6Correct100: p6c100, Period6Pct100: pct(p6c100, n100),
