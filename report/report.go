@@ -376,8 +376,8 @@ footer{padding:22px 0 10px;gap:8px}
     <input type="radio" name="lot" id="tab-3d" checked>
     <input type="radio" name="lot" id="tab-ssq">
     <nav class="tab-bar">
-      <label class="tab-btn" for="tab-3d"><span class="tab-ico">3D</span>福彩3D 六杀</label>
-      <label class="tab-btn" for="tab-ssq"><span class="tab-ico">球</span>双色球 统计</label>
+      <label class="tab-btn" for="tab-3d"><span class="tab-ico">3D</span>福彩3D</label>
+      <label class="tab-btn" for="tab-ssq"><span class="tab-ico">球</span>双色球</label>
     </nav>
     <div class="tab-pane" id="pane-3d">
   <main>
