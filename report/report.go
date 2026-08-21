@@ -1,4 +1,4 @@
-// Package report 生成预测页面 HTML（深色数据大屏响应式，内联样式零外部依赖）。
+// Package report 生成数据参考页面 HTML（深色数据大屏响应式，内联样式零外部依赖）。
 package report
 
 import (
@@ -93,7 +93,7 @@ const tmplSrc = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<title>福彩3D 百十个杀码预测 · V9.3 六杀制</title>
+<title>福彩3D 杀码 + 双色球 数据参考</title>
 <style>
 :root{--bg1:#0A0E17;--bg2:#0D1424;--surface:#121A2B;--surface2:#0D1424;--border:#1E293B;--border-soft:rgba(148,163,184,.12);--text1:#E8EEF9;--text2:#94A3B8;--text3:#64748B;--cyan:#22D3EE;--cyan-soft:#67E8F9;--violet:#A78BFA;--violet-soft:#C4B5FD;--amber:#FBBF24;--amber-soft:#FCD34D;--blue:#60A5FA;--blue-soft:#93C5FD;--green:#34D399;--green-soft:#6EE7B7;--red:#F87171;--radius:16px;--font-cn:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;--font-num:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,monospace}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -380,7 +380,7 @@ footer{padding:22px 0 10px;gap:8px}
       <svg class="brand-icon" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="32" height="32" rx="9" stroke="#22D3EE" stroke-width="2"/><circle cx="17" cy="17" r="7" stroke="#22D3EE" stroke-width="2"/><circle cx="17" cy="17" r="2.5" fill="#22D3EE"/><path d="M17 2v6M17 26v6M2 17h6M26 17h6" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/></svg>
       <div>
         <div class="brand-name">KILL6</div>
-        <div class="brand-sub">福彩3D + 双色球 · 数据预测</div>
+        <div class="brand-sub">福彩3D + 双色球 · 数据参考</div>
       </div>
     </div>
     <div class="hdr-right">
@@ -412,14 +412,14 @@ footer{padding:22px 0 10px;gap:8px}
             <span class="tag">V9.3 六杀制</span>
             <span class="kicker-line">双引擎独立杀码 · kill1 决策树 + kill2 算术公式</span>
           </div>
-          <h1>福彩3D 百十个杀码预测</h1>
+          <h1>福彩3D 百十个杀码参考</h1>
           <p class="hero-sub">每天开奖一个三位数。我们提前排除 6 个号码（百位 2 个、十位 2 个、个位 2 个），开奖号一个都没被排除 = 全中。近 100 期全中率 {{printf "%.1f" .Meta.Period6Pct100}}%，远超"闭眼随便排除"的 51.2%。</p>
           <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">「杀码」= <strong>排除掉的号码</strong>；「6 杀全中」= 排除的 6 个号码一个都没开出来。下面三框里的数字，就是今天要排除的 6 个号码。</span></div>
         </div>
         <div class="hero-side">
           <div class="hero-pill"><span class="pill green"><span class="dot"></span>福彩3D · 近100期 6杀全中 {{printf "%.1f" .Meta.Period6Pct100}}%</span></div>
           <div class="issue-badge">
-            <span class="issue-label">下一期预测 · 第 {{.NextIssue}} 期</span>
+            <span class="issue-label">下一期参考 · 第 {{.NextIssue}} 期</span>
             <span class="issue-value">6 杀码</span>
           </div>
         </div>
@@ -445,7 +445,7 @@ footer{padding:22px 0 10px;gap:8px}
 
       <div class="pred-grid">
         <div class="pred-main">
-          <div class="pred-head"><span class="pred-label">下一期预测 · 第 {{.NextIssue}} 期</span><span class="mini-tag">kill1 + kill2</span></div>
+          <div class="pred-head"><span class="pred-label">下一期参考 · 第 {{.NextIssue}} 期</span><span class="mini-tag">kill1 + kill2</span></div>
           <div class="pos-row">
             <div class="pos-card"><span class="pos-label">百位</span><span class="pos-num v-cyan">{{.Pred.H}}, {{.Pred.H2}}</span></div>
             <div class="pos-card"><span class="pos-label">十位</span><span class="pos-num v-violet">{{.Pred.T}}, {{.Pred.T2}}</span></div>
@@ -577,10 +577,10 @@ footer{padding:22px 0 10px;gap:8px}
       <div class="hero-top">
         <div class="hero-left">
           <div class="kicker">
-            <span class="tag">数据预测</span>
+            <span class="tag">数据参考</span>
             <span class="kicker-line">红球 1-33 选 6 · 蓝球 1-16 选 1</span>
           </div>
-          <h1>双色球 杀号预测</h1>
+          <h1>双色球 杀号参考</h1>
           <p class="hero-sub">每期开 6 个红球 + 1 个蓝球。蓝球只有 16 个，每期排除 3 个——<strong>10 次有 8 次避开</strong>，这是数学上的结构性优势；红球空间大，我们如实展示、不吹。</p>
           <div class="plain-tip"><span class="pt-label">小白版</span><span class="pt-body">红球 = 红色号码区（1-33 里开 6 个），蓝球 = 蓝色号码区（1-16 里开 1 个）。「杀号」= <strong>帮你排除掉</strong>的号码。</span></div>
         </div>
@@ -599,7 +599,7 @@ footer{padding:22px 0 10px;gap:8px}
         <div class="shc-ring">{{.SSQRing}}</div>
       </div>
       <div class="ssq-kill">
-        <div class="sk-head"><span class="sk-title">下期预测 · 第 {{.SSQ.Meta.NextIssue}} 期</span><span class="sk-strategy">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期统计</span></div>
+        <div class="sk-head"><span class="sk-title">下期参考 · 第 {{.SSQ.Meta.NextIssue}} 期</span><span class="sk-strategy">{{.SSQ.Meta.Strategy}} · 近{{.SSQ.Meta.Window}}期统计</span></div>
         <div class="sk-body">
           <div class="sk-group"><span class="sk-label rd">杀红球 · 6 个</span><span class="sk-nums">{{range .SSQ.Meta.KillReds}}<b class="nb rd">{{printf "%02d" .}}</b>{{end}}</span></div>
           <div class="sk-group"><span class="sk-label bd">杀蓝球 · 3 个</span><span class="sk-nums">{{range .SSQ.Meta.KillBlues}}<b class="nb bd">{{printf "%02d" .}}</b>{{end}}</span></div>
@@ -611,7 +611,7 @@ footer{padding:22px 0 10px;gap:8px}
         <div class="keep-grid">{{range .SSQ.KeepReds}}<span class="keep-num">{{printf "%02d" .}}</span>{{end}}</div>
         <div class="sk-note">保留池 = 33 个红球去掉排除的 6 个。红球命中与随机相当（全量 {{printf "%.1f" .SSQ.Meta.RedPct}}% vs 基线 {{printf "%.1f" .SSQ.Meta.BaseRed}}%），仅供参考。</div>
       </div>
-      <p class="disclaimer">红球组合空间巨大（33 选 6 ≈ 110 万种），历史统计无法稳定预测红球号码；本页数据仅供选号参考，不构成投注建议，请理性娱乐。</p>
+      <p class="disclaimer">红球组合空间巨大（33 选 6 ≈ 110 万种），历史统计无法稳定预判红球号码；本页数据仅供选号参考，不构成投注建议，请理性娱乐。</p>
     </section>
 
     <section class="section">

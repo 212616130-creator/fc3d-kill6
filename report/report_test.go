@@ -23,7 +23,7 @@ func TestGenerateHTMLCore(t *testing.T) {
 		t.Fatalf("GenerateHTML: %v", err)
 	}
 	for _, want := range []string{
-		"福彩3D 百十个杀码预测",
+		"福彩3D 百十个杀码参考",
 		"2026222", "380",
 		"wu529778790/fc3d-kill6", // GitHub 图标
 		"wx-auth-sdk",            // 认证接入
@@ -52,7 +52,7 @@ func TestGenerateHTMLWithSSQ(t *testing.T) {
 		t.Fatalf("GenerateHTML: %v", err)
 	}
 	for _, want := range []string{
-		"双色球 杀号预测",
+		"双色球 杀号参考",
 		"杀红球 · 6 个", "杀蓝球 · 3 个",
 		"红球热号 Top6", "红球冷号 Top6", "红球遗漏 Top6", "蓝球频率",
 		"红球和值走势",
