@@ -88,6 +88,9 @@ h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .formula-label{width:40px;font-size:12px;color:var(--text3);flex:none}
 .formula{font:600 15px var(--font-num);color:var(--violet)}
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wf-note{margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);font-size:10px;line-height:1.6;color:var(--text2)}
+.trend-card{padding:14px 16px 6px;border-radius:14px;background:var(--surface);border:1px solid var(--border-soft)}
+.trend-card svg{display:block;width:100%;height:auto}
 .cmp-cell{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border-soft)}
 .cmp-value{font:800 20px var(--font-num)}
 .cmp-label{font-size:10px;color:var(--text3)}
@@ -296,6 +299,7 @@ footer{padding:22px 0 10px;gap:8px}
             <div class="cmp-cell"><span class="cmp-value v-violet">≈66%</span><span class="cmp-label">6杀全中理论上限</span></div>
             <div class="cmp-cell"><span class="cmp-value v-text2">51.2%</span><span class="cmp-label">随机基线</span></div>
           </div>
+          <div class="wf-note">Walk-forward 滚动验证：近 100 期 6 杀全中 81.0% vs 随机基线 51.2%，超越 +29.8pp（z=6.0, p=<0.001）</div>
         </div>
       </div>
       <div class="warn">
@@ -303,6 +307,18 @@ footer{padding:22px 0 10px;gap:8px}
         <span>理性参考提示：彩票本质是随机游戏，杀码结果仅基于历史数据统计，不构成任何投注建议。请理性娱乐。</span>
       </div>
     </section>
+
+    
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">6 杀率趋势</h2>
+        <span class="section-meta">滚动 100 期 · 每日自动记录 · 虚线为 70% 预警线与 51.2% 随机基线</span>
+      </div>
+      <div class="trend-card">
+        <svg viewBox="0 0 600 200" role="img" aria-label="6杀全中率趋势折线图"><line x1="10.0" y1="89.8" x2="560.0" y2="89.8" stroke="#F87171" stroke-width="1" stroke-dasharray="4 3" opacity="0.55"/><text x="564.0" y="92.8" fill="#F87171" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">70%</text><line x1="10.0" y1="143.8" x2="560.0" y2="143.8" stroke="#64748B" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/><text x="564.0" y="146.8" fill="#64748B" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">51.2%</text><polyline points="NaN,58.2" fill="none" stroke="#34D399" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="NaN" cy="58.2" r="3.5" fill="#34D399"/><text x="NaN" y="48.2" fill="#34D399" font-size="13" font-weight="600" font-family="'SF Mono',ui-monospace,Menlo,monospace">81.0%</text></svg>
+      </div>
+    </section>
+    
 
     <section class="section">
       <div class="section-head">

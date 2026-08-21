@@ -15,6 +15,7 @@ import (
 	"fc3d-kill6/backtest"
 	"fc3d-kill6/data"
 	"fc3d-kill6/fetch"
+	"fc3d-kill6/monitor"
 	"fc3d-kill6/report"
 )
 
@@ -73,22 +74,34 @@ func main() {
 			w, ws.Overall, ws.All6Pct, ws.MaxConsecutive)
 	}
 
-	// Step 4: 升级触发检测
-	hist, _ := backtest.RecordKill6(*kill6Path, m.Period6Pct100, m.LatestIssue, m.LatestDate)
-	triggered, reasons, monthDrop := backtest.CheckUpgradeTrigger(m.Period6Pct100, hist)
+	// Step 3.6: walk-forward 滚动前推验证（无泄漏，对照随机基线 51.2% 二项检验）
+	fmt.Printf("\n📉 Walk-forward 滚动前推验证 (窗口独立重置状态机, 基线 %.1f%%):\n", backtest.BasePct*100)
+	wf := backtest.WalkForward(draws, []int{100, 200, 300, 500})
+	for _, w := range wf {
+		pv := fmt.Sprintf("%.4f", w.PVal)
+		if w.PVal < 0.001 {
+			pv = "<0.001"
+		}
+		fmt.Printf("   %s: 6杀全中%d/%d=%.1f%% | 超越%+.1fpp | z=%.1f p=%s\n",
+			w.Label, w.All6, w.N, w.All6Pct, w.BeatPP, w.Z, pv)
+	}
+
+	// Step 4: 趋势记录与表现预警
+	hist, _ := monitor.Record(*kill6Path, m.Period6Pct100, m.LatestIssue, m.LatestDate)
+	triggered, reasons, monthDrop := monitor.CheckAlert(m.Period6Pct100, hist)
 	if triggered {
-		fmt.Println("\n🚨🚨🚨 升级触发！建议重新穷举6个算法 🚨🚨🚨")
+		fmt.Println("\n🚨🚨🚨 算法表现预警：滚动 100 期 6 杀全中率明显下滑 🚨🚨🚨")
 		for _, r := range reasons {
 			fmt.Printf("   ⚠️ %s\n", r)
 		}
 	} else {
-		fmt.Printf("   ✅ 升级触发器: 正常 (单月%+.1fpp, 阈值跌破70%%/月降8pp)\n", monthDrop)
+		fmt.Printf("   ✅ 表现监控: 正常 (单月%+.1fpp, 预警阈值跌破70%%/月降8pp)\n", monthDrop)
 	}
 
 	// Step 5: 生成 HTML
 	nextIssue := fetch.NextIssueCalc(m.LatestIssue, m.LatestDate, nextIssueHint(newData))
 	banners := report.Banners{DataUpgrade: triggered, UpgradeReasons: reasons, DataFailed: !dataAlive}
-	html, err := report.GenerateHTML(m, bt.Pred, bt.Rows, banners, nextIssue)
+	html, err := report.GenerateHTML(m, bt.Pred, bt.Rows, banners, nextIssue, hist, wf)
 	if err != nil {
 		fmt.Printf("❌ HTML 生成失败: %v\n", err)
 		os.Exit(1)

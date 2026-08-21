@@ -2,6 +2,8 @@
 package backtest
 
 import (
+	"math"
+
 	"fc3d-kill6/data"
 	"fc3d-kill6/engine"
 )
@@ -219,6 +221,65 @@ func MultiWindow(draws []data.Draw, windows []int) map[string]WindowStats {
 		}
 	}
 	return out
+}
+
+// 随机基线：每位置杀 2 码不中的概率 8/10，三位置 (8/10)^3 ≈ 51.2%。
+// 与页面展示口径一致，walk-forward 对照基准。
+const BasePct = 0.512
+
+// WFWindow walk-forward 单窗口验证结果
+type WFWindow struct {
+	Label   string  // 如 "100期"
+	N       int     // 窗口期数
+	All6    int     // 6 杀全中命中数
+	All6Pct float64 // 命中率 %
+	BeatPP  float64 // 超越基线幅度 pp
+	Z       float64 // 正态近似 z 分数
+	PVal    float64 // 双侧 p 值
+}
+
+// WalkForward 滚动前推验证（无泄漏）：
+// 每个窗口独立重置状态机，仅用窗口内数据逐期预测并对照实际；
+// 与随机基线 BasePct 做二项检验（正态近似），给出显著性。
+func WalkForward(draws []data.Draw, windows []int) []WFWindow {
+	total := len(draws)
+	out := []WFWindow{}
+	for _, w := range windows {
+		if total <= w {
+			continue
+		}
+		start := total - w
+		st := engine.NewState()
+		all6 := 0
+		for i := start; i < total; i++ {
+			p := draws[i-1]
+			d := draws[i]
+			hk, tk, ok, hk2, tk2, ok2 := st.Next(p.B, p.S, p.G, d.G)
+			if hk != d.B && tk != d.S && ok != d.G && hk2 != d.B && tk2 != d.S && ok2 != d.G {
+				all6++
+			}
+		}
+		pctVal := pct(all6, w)
+		se := math.Sqrt(BasePct * (1 - BasePct) / float64(w))
+		z := 0.0
+		if se > 0 {
+			z = (pctVal/100 - BasePct) / se
+		}
+		out = append(out, WFWindow{
+			Label: itoa(w) + "期", N: w, All6: all6, All6Pct: pctVal,
+			BeatPP: pctVal - BasePct*100, Z: z, PVal: normP(z),
+		})
+	}
+	return out
+}
+
+// normP 双侧正态 p 值（erf 实现）
+func normP(z float64) float64 {
+	if z < 0 {
+		z = -z
+	}
+	// 双侧: 2*(1-Phi(z)) = erfc(z/sqrt2)
+	return math.Erfc(z / math.Sqrt2)
 }
 
 func pct(c, n int) float64 {

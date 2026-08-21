@@ -5,9 +5,11 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"strings"
 	"text/template"
 
 	"fc3d-kill6/backtest"
+	"fc3d-kill6/monitor"
 )
 
 // Data 模板数据
@@ -20,7 +22,7 @@ type Data struct {
 
 // Banners 页面顶部横幅
 type Banners struct {
-	DataUpgrade    bool // 算法升级触发（红条）
+	DataUpgrade    bool // 算法表现预警（红条）
 	UpgradeReasons []string
 	DataFailed     bool // 数据源全挂（橙条）
 }
@@ -35,6 +37,8 @@ type view struct {
 	NextIssue string
 	Ring      string
 	Pct6Beat  float64
+	WFNote    string
+	TrendSVG  string
 }
 
 // ringSVG 生成 6 杀全中率环形进度（path 圆弧，规避 transform 解析问题）
@@ -157,6 +161,9 @@ h1{font-size:44px;font-weight:700;letter-spacing:.5px}
 .formula-label{width:40px;font-size:12px;color:var(--text3);flex:none}
 .formula{font:600 15px var(--font-num);color:var(--violet)}
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wf-note{margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);font-size:10px;line-height:1.6;color:var(--text2)}
+.trend-card{padding:14px 16px 6px;border-radius:14px;background:var(--surface);border:1px solid var(--border-soft)}
+.trend-card svg{display:block;width:100%;height:auto}
 .cmp-cell{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border-soft)}
 .cmp-value{font:800 20px var(--font-num)}
 .cmp-label{font-size:10px;color:var(--text3)}
@@ -270,7 +277,7 @@ footer{padding:22px 0 10px;gap:8px}
 <div class="data-alert"><div class="da-title">数据源异常</div>所有数据源获取失败，页面为最后一次成功数据，请检查数据源（灰鸟 / 17500.cn）。</div>
 {{end}}
 {{if .Banners.DataUpgrade}}
-<div class="upgrade-alert"><div class="ua-title">算法升级触发</div>6杀全中率已触及升级阈值，建议重新穷举 6 个算法：<br>{{range .Banners.UpgradeReasons}}• {{.}}<br>{{end}}<span class="ua-sub">触发条件：滚动100期跌破 70% 或 单月下滑超 8pp</span></div>
+<div class="upgrade-alert"><div class="ua-title">算法表现预警</div>滚动 100 期 6 杀全中率出现明显下滑：<br>{{range .Banners.UpgradeReasons}}• {{.}}<br>{{end}}<span class="ua-sub">预警条件：滚动100期跌破 70% 或 单月下滑超 8pp · 仅作趋势监控参考</span></div>
 {{end}}
 
     <section class="hero">
@@ -369,6 +376,7 @@ footer{padding:22px 0 10px;gap:8px}
             <div class="cmp-cell"><span class="cmp-value v-violet">≈66%</span><span class="cmp-label">6杀全中理论上限</span></div>
             <div class="cmp-cell"><span class="cmp-value v-text2">51.2%</span><span class="cmp-label">随机基线</span></div>
           </div>
+          {{if .WFNote}}<div class="wf-note">{{.WFNote}}</div>{{end}}
         </div>
       </div>
       <div class="warn">
@@ -376,6 +384,18 @@ footer{padding:22px 0 10px;gap:8px}
         <span>理性参考提示：彩票本质是随机游戏，杀码结果仅基于历史数据统计，不构成任何投注建议。请理性娱乐。</span>
       </div>
     </section>
+
+    {{if .TrendSVG}}
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">6 杀率趋势</h2>
+        <span class="section-meta">滚动 100 期 · 每日自动记录 · 虚线为 70% 预警线与 51.2% 随机基线</span>
+      </div>
+      <div class="trend-card">
+        <svg viewBox="0 0 600 200" role="img" aria-label="6杀全中率趋势折线图">{{.TrendSVG}}</svg>
+      </div>
+    </section>
+    {{end}}
 
     <section class="section">
       <div class="section-head">
@@ -445,7 +465,7 @@ footer{padding:22px 0 10px;gap:8px}
 </html>`
 
 // GenerateHTML 渲染完整页面（Rows 自动转为最新在前）
-func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string) (string, error) {
+func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b Banners, nextIssue string, hist []monitor.Entry, wf []backtest.WFWindow) (string, error) {
 	t, err := template.New("page").Parse(tmplSrc)
 	if err != nil {
 		return "", err
@@ -458,10 +478,59 @@ func GenerateHTML(m backtest.Meta, pred backtest.Predict, rows []backtest.Row, b
 		Banners: b, NextIssue: nextIssue,
 		Ring:     ringSVG(m.Period6Pct100),
 		Pct6Beat: m.Period6Pct100 - 51.2,
+		WFNote:   wfNote(wf),
+		TrendSVG: trendSVG(hist),
 	}
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+// wfNote 生成 walk-forward 摘要行（取 100 期窗口）
+func wfNote(wf []backtest.WFWindow) string {
+	if len(wf) == 0 {
+		return ""
+	}
+	w := wf[0]
+	pv := fmt.Sprintf("%.4f", w.PVal)
+	if w.PVal < 0.001 {
+		pv = "<0.001"
+	}
+	return fmt.Sprintf("Walk-forward 滚动验证：近 %d 期 6 杀全中 %.1f%% vs 随机基线 51.2%%，超越 %+.1fpp（z=%.1f, p=%s）",
+		w.N, w.All6Pct, w.BeatPP, w.Z, pv)
+}
+
+// trendSVG 生成 6 杀全中率趋势折线（SVG 片段，含 70% 预警线与 51.2% 基线）
+func trendSVG(entries []monitor.Entry) string {
+	n := len(entries)
+	if n == 0 {
+		return ""
+	}
+	if n > 90 {
+		entries = entries[n-90:]
+		n = 90
+	}
+	const W, H = 600.0, 200.0
+	const padL, padR, padT, padB = 10.0, 40.0, 18.0, 24.0
+	plotW := W - padL - padR
+	plotH := H - padT - padB
+	yMin, yMax := 40.0, 95.0
+	x := func(i int) float64 { return padL + float64(i)*(plotW/float64(n-1)) }
+	y := func(pct float64) float64 { return padT + (yMax-pct)/(yMax-yMin)*plotH }
+	pts := make([]string, 0, n)
+	for i, e := range entries {
+		pts = append(pts, fmt.Sprintf("%.1f,%.1f", x(i), y(e.Pct)))
+	}
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#F87171" stroke-width="1" stroke-dasharray="4 3" opacity="0.55"/>`, padL, y(70), W-padR, y(70)))
+	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#F87171" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">70%%</text>`, W-padR+4, y(70)+3))
+	sb.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#64748B" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>`, padL, y(51.2), W-padR, y(51.2)))
+	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#64748B" font-size="10" font-family="'SF Mono',ui-monospace,Menlo,monospace">51.2%%</text>`, W-padR+4, y(51.2)+3))
+	sb.WriteString(`<polyline points="` + strings.Join(pts, " ") + `" fill="none" stroke="#34D399" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`)
+	lx, ly := x(n-1), y(entries[n-1].Pct)
+	sb.WriteString(fmt.Sprintf(`<circle cx="%.1f" cy="%.1f" r="3.5" fill="#34D399"/>`, lx, ly))
+	sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" fill="#34D399" font-size="13" font-weight="600" font-family="'SF Mono',ui-monospace,Menlo,monospace">%.1f%%</text>`, lx-8, ly-10, entries[n-1].Pct))
+	return sb.String()
 }
