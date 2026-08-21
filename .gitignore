@@ -4,3 +4,6 @@ fc3d-kill6
 # Go 临时文件
 *.test
 *.out
+
+# Agent 工作目录（会话记忆，不入库）
+.workbuddy/
